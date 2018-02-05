@@ -1,0 +1,8 @@
+.vs/**
+**/*.user
+**/x64
+**/Debug
+**/Release
+**/packages
+pereader.VC.db
+pereader.VC.VC.opendb
