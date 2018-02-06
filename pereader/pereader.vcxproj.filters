@@ -2,9 +2,52 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="pe.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="dosheader.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="pefileheader.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="peheader.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="pedatadirectory.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="peoptionalheader.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="pesectiontable.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pe.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="dosheader.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="pefileheader.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="peheader.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="pedatadirectory.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="peoptionalheader.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="pesectiontable.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="pe">
+      <UniqueIdentifier>{d311af6a-96fb-4b96-b03a-f02e3c5486d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

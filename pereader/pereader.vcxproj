@@ -147,10 +147,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dosheader.hpp" />
+    <ClInclude Include="pe.hpp" />
+    <ClInclude Include="pedatadirectory.hpp" />
+    <ClInclude Include="pefileheader.hpp" />
+    <ClInclude Include="peheader.hpp" />
+    <ClInclude Include="peoptionalheader.hpp" />
+    <ClInclude Include="pesectiontable.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dosheader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pe.cpp" />
+    <ClCompile Include="pedatadirectory.cpp" />
+    <ClCompile Include="pefileheader.cpp" />
+    <ClCompile Include="peheader.cpp" />
+    <ClCompile Include="peoptionalheader.cpp" />
+    <ClCompile Include="pesectiontable.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
