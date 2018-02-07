@@ -1,16 +1,10 @@
 #include "stdafx.h"
 #include "pe.hpp"
-#include "dosheader.hpp"
-#include "pefileheader.hpp"
-
-#define _CRT_SECURE_NO_WARNINGS
-#define NOMINMAX
-#include <Windows.h>
 
 namespace fs = std::experimental::filesystem;
 
 PE::PE (const std::string& path) :
-	mPath (path)
+	path (path)
 {
 }
 
@@ -18,23 +12,21 @@ PE::~PE () {
 }
 
 bool PE::Load () {
-	fs::path path (mPath);
+	fs::path pePath (path);
 	if (!fs::exists (path)) {
 		return false;
 	}
 
-	std::fstream fs (path.string (), std::ios::binary | std::ios::in);
+	std::fstream fs (pePath.string (), std::ios::binary | std::ios::in);
 	if (!fs) {
 		return false;
 	}
 
 	//Read header
-	fs >> mHeader;
+	fs >> header;
 	if (!fs) {
 		return false;
 	}
 
-	//TODO: ...
-
-	return false;
+	return true;
 }

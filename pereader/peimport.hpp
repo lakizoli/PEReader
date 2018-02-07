@@ -54,3 +54,12 @@ struct PEDelayImportDescriptor {
 
 	PEDelayImportDescriptor ();
 };
+
+struct PEImportByName {
+	uint16_t Hint;
+	std::string Name;
+
+	PEImportByName ();
+
+	static PEImportByName Read (const uint8_t* address);
+};

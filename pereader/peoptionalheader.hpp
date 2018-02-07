@@ -164,8 +164,8 @@ struct PEOptionalHeader {
 		IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR	= 14   // COM Runtime descriptor
 	};
 
-	std::vector<uint8_t> Data;
-	std::vector<PEDataDirectory> DataDirectory;
+	std::vector<uint8_t> data;
+	std::vector<PEDataDirectory> dataDirectories;
 
 	HeaderTypes type;
 	union {

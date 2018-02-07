@@ -4,6 +4,46 @@
 PEHeader::PEHeader () {
 }
 
+bool PEHeader::EnumerateImports (ImportCallback callback) const {
+	const PEDataDirectory& importDirectory = optionalHeader.dataDirectories[(uint16_t) PEOptionalHeader::DirectoryEntries::IMAGE_DIRECTORY_ENTRY_IMPORT];
+	const PEImportDescriptor* descriptor = sectionTable.GetInstanceOnVirtualAddress<PEImportDescriptor> (importDirectory.VirtualAddress);
+	while (descriptor && descriptor->Characteristics != 0) {
+		const char* moduleName = sectionTable.GetInstanceOnVirtualAddress<char> (descriptor->Name);
+		if (moduleName) {
+			if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR32_MAGIC) { //32Bit executable
+				WalkImportFunctions<uint32_t> (false, descriptor->FirstThunk, moduleName, callback);
+			} else if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR64_MAGIC) { //64Bit executable
+				WalkImportFunctions<uint64_t> (false, descriptor->FirstThunk, moduleName, callback);
+			} else { //Unhandled import format
+				return false;
+			}
+		}
+		++descriptor;
+	}
+
+	const PEDataDirectory& importDirectoryDelay = optionalHeader.dataDirectories[(uint16_t) PEOptionalHeader::DirectoryEntries::IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT];
+	const PEDelayImportDescriptor* descriptorDelay = sectionTable.GetInstanceOnVirtualAddress<PEDelayImportDescriptor> (importDirectoryDelay.VirtualAddress);
+	while (descriptorDelay && descriptorDelay->ModuleHandleRVA != 0 && descriptorDelay->DllNameRVA != 0) {
+		if (descriptorDelay->Attributes.RvaBased) {
+			const char* moduleName = sectionTable.GetInstanceOnVirtualAddress<char> (descriptorDelay->DllNameRVA);
+			if (moduleName) {
+				if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR32_MAGIC) { //32Bit executable
+					WalkImportFunctions<uint32_t> (true, descriptorDelay->ImportNameTableRVA, moduleName, callback);
+				} else if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR64_MAGIC) { //64Bit executable
+					WalkImportFunctions<uint64_t> (true, descriptorDelay->ImportNameTableRVA, moduleName, callback);
+				} else { //Unhandled import format
+					return false;
+				}
+			}
+		} else { //Unhandled import format
+			return false;
+		}
+		++descriptorDelay;
+	}
+
+	return true;
+}
+
 std::istream& operator>> (std::istream& stream, PEHeader& header) {
 	//Read DOS header
 	stream >> header.dosHeader;
@@ -44,16 +84,6 @@ std::istream& operator>> (std::istream& stream, PEHeader& header) {
 	if (!stream) {
 		return stream;
 	}
-
-	//Read exports
-	//TODO: ...
-
-	//Read imports
-	//TODO: ...
-
-
-
-	//TODO: ...
 
 	return stream;
 }
