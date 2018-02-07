@@ -149,10 +149,12 @@
   <ItemGroup>
     <ClInclude Include="dosheader.hpp" />
     <ClInclude Include="pe.hpp" />
-    <ClInclude Include="pedatadirectory.hpp" />
     <ClInclude Include="pefileheader.hpp" />
     <ClInclude Include="peheader.hpp" />
+    <ClInclude Include="peimport.hpp" />
     <ClInclude Include="peoptionalheader.hpp" />
+    <ClInclude Include="pesection.hpp" />
+    <ClInclude Include="pesectionheader.hpp" />
     <ClInclude Include="pesectiontable.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -160,10 +162,12 @@
     <ClCompile Include="dosheader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pe.cpp" />
-    <ClCompile Include="pedatadirectory.cpp" />
     <ClCompile Include="pefileheader.cpp" />
     <ClCompile Include="peheader.cpp" />
+    <ClCompile Include="peimport.cpp" />
     <ClCompile Include="peoptionalheader.cpp" />
+    <ClCompile Include="pesection.cpp" />
+    <ClCompile Include="pesectionheader.cpp" />
     <ClCompile Include="pesectiontable.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "peheader.hpp"
-#include "peoptionalheader.hpp"
 
 PEHeader::PEHeader () {
 }
@@ -39,6 +38,20 @@ std::istream& operator>> (std::istream& stream, PEHeader& header) {
 	if (!stream) {
 		return stream;
 	}
+
+	//Read section table
+	PESectionTable::Read (stream, header.fileHeader.NumberOfSections, header.sectionTable);
+	if (!stream) {
+		return stream;
+	}
+
+	//Read exports
+	//TODO: ...
+
+	//Read imports
+	//TODO: ...
+
+
 
 	//TODO: ...
 

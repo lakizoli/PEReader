@@ -14,13 +14,21 @@
     <ClInclude Include="peheader.hpp">
       <Filter>pe</Filter>
     </ClInclude>
-    <ClInclude Include="pedatadirectory.hpp">
-      <Filter>pe</Filter>
-    </ClInclude>
     <ClInclude Include="peoptionalheader.hpp">
       <Filter>pe</Filter>
     </ClInclude>
-    <ClInclude Include="pesectiontable.hpp" />
+    <ClInclude Include="pesectiontable.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="pesection.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="pesectionheader.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
+    <ClInclude Include="peimport.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -37,13 +45,21 @@
     <ClCompile Include="peheader.cpp">
       <Filter>pe</Filter>
     </ClCompile>
-    <ClCompile Include="pedatadirectory.cpp">
-      <Filter>pe</Filter>
-    </ClCompile>
     <ClCompile Include="peoptionalheader.cpp">
       <Filter>pe</Filter>
     </ClCompile>
-    <ClCompile Include="pesectiontable.cpp" />
+    <ClCompile Include="pesectiontable.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="pesection.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="pesectionheader.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="peimport.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pe">

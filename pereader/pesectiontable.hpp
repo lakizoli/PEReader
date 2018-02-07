@@ -1,26 +1,14 @@
 #pragma once
 
-struct PESectionHeader {
-	std::string    Name;
-	union {
-		uint32_t   PhysicalAddress;
-		uint32_t   VirtualSize;
-	} Misc;
-	uint32_t   VirtualAddress;
-	uint32_t   SizeOfRawData;
-	uint32_t   PointerToRawData;
-	uint32_t   PointerToRelocations;
-	uint32_t   PointerToLinenumbers;
-	uint16_t   NumberOfRelocations;
-	uint16_t   NumberOfLinenumbers;
-	uint32_t   Characteristics;
-
-	PESectionHeader ();
-};
+#include "pesectionheader.hpp"
+#include "pesection.hpp"
 
 struct PESectionTable {
-	std::vector<PESectionHeader> sections;
+	std::vector<PESectionHeader> sectionHeaders;
+	std::vector<PESection> sections;
 
 	PESectionTable ();
+
+	static std::istream& Read (std::istream& stream, uint32_t numberOfSections, PESectionTable& sectionTable);
 };
 
