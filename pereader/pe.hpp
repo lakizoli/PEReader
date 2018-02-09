@@ -12,6 +12,10 @@ public:
 
 	bool Load ();
 
+	const std::string& GetPath () const {
+		return path;
+	}
+
 	const PEHeader& GetHeader () const {
 		return header;
 	}

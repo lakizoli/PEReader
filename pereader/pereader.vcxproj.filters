@@ -29,6 +29,7 @@
     <ClInclude Include="peimport.hpp">
       <Filter>pe</Filter>
     </ClInclude>
+    <ClInclude Include="utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -60,6 +61,7 @@
     <ClCompile Include="peimport.cpp">
       <Filter>pe</Filter>
     </ClCompile>
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pe">
