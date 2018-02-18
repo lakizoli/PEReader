@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "flatbinary.hpp"
-#include "pe.hpp"
+
+#ifdef FLATBIN_COMPLIE_GENERATION
+#	include "pe.hpp"
+#endif //FLATBIN_COMPLIE_GENERATION
 
 FlatBinary::FlatBinary () :
 	mVersion (1),
@@ -11,6 +14,8 @@ FlatBinary::FlatBinary () :
 	mImportTableAddress (0)
 {
 }
+
+#ifdef FLATBIN_COMPLIE_GENERATION
 
 std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 	std::shared_ptr<FlatBinary> binary (new FlatBinary ());
@@ -48,12 +53,23 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 	}
 
 	//Compose binary
-	binary->mBinary.resize (binary->mVirtualSize);
+	uint64_t binaryStartOffset = UINT64_MAX;
+	for (size_t i = 0, iEnd = peHeader.sectionTable.headers.size (); i < iEnd; ++i) {
+		if (peHeader.sectionTable.headers[i].VirtualAddress < binaryStartOffset) {
+			binaryStartOffset = peHeader.sectionTable.headers[i].VirtualAddress;
+		}
+	}
+
+	if (binaryStartOffset != binary->mVirtualBase) { //Some region filled below the virtual base address space, so we have to exit with error...
+		return nullptr;
+	}
+
+	binary->mBinary.resize (binary->mVirtualSize - binaryStartOffset);
 	for (size_t i = 0, iEnd = peHeader.sectionTable.headers.size (); i < iEnd; ++i) {
 		const PESectionHeader& sectionHeader = peHeader.sectionTable.headers[i];
 		const PESection& section = peHeader.sectionTable.sections[i];
 
-		uint32_t pos = sectionHeader.VirtualAddress;
+		uint64_t pos = (uint64_t) sectionHeader.VirtualAddress - binaryStartOffset;
 		std::copy (section.data.begin (), section.data.end (), binary->mBinary.begin () + pos);
 	}
 
@@ -69,6 +85,137 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 		binary->mImports.emplace (iatOffset, ss.str ());
 	})) {
 		return nullptr;
+	}
+
+	return binary;
+}
+
+#endif //FLATBIN_COMPLIE_GENERATION
+
+std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
+	std::shared_ptr<FlatBinary> binary (new FlatBinary ());
+
+	std::fstream file (path, std::ios::binary | std::ios::in);
+	if (!file) {
+		return false;
+	}
+
+	//Read magic
+	uint8_t magic[4] = { 'Z', 'F', 'B', '\0' };
+	uint8_t magicData[4] = { 0,0,0,0 };
+	file.read ((char*) magicData, 4 * sizeof (uint8_t));
+	if (!file) {
+		return nullptr;
+	}
+
+	if (std::memcmp (magic, magicData, 4 * sizeof (uint8_t)) != 0) {
+		return nullptr;
+	}
+
+	//Read header
+	file.read ((char*) &binary->mVersion, sizeof (mVersion));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mType, sizeof (mType));
+	if (!file) {
+		return nullptr;
+	}
+
+	uint32_t reserved = 0; //align to 64 bit
+	file.read ((char*) &reserved, sizeof (reserved));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mVirtualBase, sizeof (mVirtualBase));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mVirtualSize, sizeof (mVirtualSize));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mStackSize, sizeof (mStackSize));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mHeapSize, sizeof (mHeapSize));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mEntryPoint, sizeof (mEntryPoint));
+	if (!file) {
+		return nullptr;
+	}
+
+	file.read ((char*) &binary->mImportTableAddress, sizeof (mImportTableAddress));
+	if (!file) {
+		return nullptr;
+	}
+
+	//Read imports
+	uint64_t importCount = 0;
+	file.read ((char*) &importCount, sizeof (importCount));
+	if (!file) {
+		return nullptr;
+	}
+
+	uint64_t iatItemSize = 0;
+	switch (binary->mType) {
+	case BinaryTypes::Bit32:
+		iatItemSize = 4;
+		break;
+	case BinaryTypes::Bit64:
+		iatItemSize = 8;
+		break;
+	default:
+		return nullptr;
+	}
+
+	uint64_t pos = 0;
+	for (uint64_t i = 0; i < importCount; ++i) {
+		uint16_t nameLength = 0;
+		file.read ((char*) &nameLength, sizeof (nameLength));
+		if (!file) {
+			return nullptr;
+		}
+
+		std::string name;
+		if (nameLength > 0) {
+			name.resize (nameLength);
+			file.read (&name[0], nameLength);
+			if (!file) {
+				return nullptr;
+			}
+		}
+
+		binary->mImports.emplace (pos, name);
+		pos += iatItemSize;
+	}
+
+	//Read exports
+	//TODO: ...
+
+	//Read data
+	uint64_t binaryCount = 0;
+	file.read ((char*) &binaryCount, sizeof (binaryCount));
+	if (!file) {
+		return false;
+	}
+
+	if (binaryCount > 0) {
+		binary->mBinary.resize (binaryCount);
+
+		file.read ((char*) &binary->mBinary[0], binaryCount * sizeof (uint8_t));
+		if (!file) {
+			return nullptr;
+		}
 	}
 
 	return binary;
@@ -158,7 +305,13 @@ bool FlatBinary::Save (const std::string& path) {
 	//TODO: ...
 
 	//Write data
-	file.write ((const char*) &mBinary[0], mBinary.size () * sizeof (uint8_t));
+	uint64_t binaryCount = mBinary.size ();
+	file.write ((const char*) &binaryCount, sizeof (binaryCount));
+	if (!file) {
+		return false;
+	}
+
+	file.write ((const char*) &mBinary[0], binaryCount * sizeof (uint8_t));
 	if (!file) {
 		return false;
 	}

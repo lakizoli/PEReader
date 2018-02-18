@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\pereader\flatbinary.hpp">
+      <Filter>flat</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\pereader\flatbinary.cpp">
+      <Filter>flat</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="flat">
+      <UniqueIdentifier>{9bc42be2-e874-49cc-a90d-842848ed2dad}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
