@@ -30,6 +30,9 @@
       <Filter>pe</Filter>
     </ClInclude>
     <ClInclude Include="utils.hpp" />
+    <ClInclude Include="flatbinary.hpp">
+      <Filter>flat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -62,10 +65,16 @@
       <Filter>pe</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="flatbinary.cpp">
+      <Filter>flat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pe">
       <UniqueIdentifier>{d311af6a-96fb-4b96-b03a-f02e3c5486d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="flat">
+      <UniqueIdentifier>{1fdb35ad-1b5e-453a-afde-82eb057bc398}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

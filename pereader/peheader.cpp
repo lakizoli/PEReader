@@ -11,9 +11,9 @@ bool PEHeader::EnumerateImports (ImportCallback callback) const {
 		const char* moduleName = sectionTable.GetInstanceOnVirtualAddress<char> (descriptor->Name);
 		if (moduleName) {
 			if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR32_MAGIC) { //32Bit executable
-				WalkImportFunctions<uint32_t> (false, descriptor->FirstThunk, moduleName, callback);
+				WalkImportFunctions<uint32_t> (false, descriptor->OriginalFirstThunk, descriptor->FirstThunk, moduleName, callback);
 			} else if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR64_MAGIC) { //64Bit executable
-				WalkImportFunctions<uint64_t> (false, descriptor->FirstThunk, moduleName, callback);
+				WalkImportFunctions<uint64_t> (false, descriptor->OriginalFirstThunk, descriptor->FirstThunk, moduleName, callback);
 			} else { //Unhandled import format
 				return false;
 			}
@@ -28,9 +28,9 @@ bool PEHeader::EnumerateImports (ImportCallback callback) const {
 			const char* moduleName = sectionTable.GetInstanceOnVirtualAddress<char> (descriptorDelay->DllNameRVA);
 			if (moduleName) {
 				if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR32_MAGIC) { //32Bit executable
-					WalkImportFunctions<uint32_t> (true, descriptorDelay->ImportNameTableRVA, moduleName, callback);
+					WalkImportFunctions<uint32_t> (true, descriptorDelay->ImportNameTableRVA, descriptorDelay->ImportAddressTableRVA, moduleName, callback);
 				} else if (optionalHeader.type == PEOptionalHeader::HeaderTypes::IMAGE_NT_OPTIONAL_HDR64_MAGIC) { //64Bit executable
-					WalkImportFunctions<uint64_t> (true, descriptorDelay->ImportNameTableRVA, moduleName, callback);
+					WalkImportFunctions<uint64_t> (true, descriptorDelay->ImportNameTableRVA, descriptorDelay->ImportAddressTableRVA, moduleName, callback);
 				} else { //Unhandled import format
 					return false;
 				}

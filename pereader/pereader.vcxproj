@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="flatbinary.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="dosheader.hpp" />
     <ClInclude Include="pe.hpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="flatbinary.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="dosheader.cpp" />
     <ClCompile Include="main.cpp" />
