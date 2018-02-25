@@ -5,6 +5,18 @@
     <ClInclude Include="..\pereader\flatbinary.hpp">
       <Filter>flat</Filter>
     </ClInclude>
+    <ClInclude Include="cpu.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="register.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="assemblycommand.hpp">
+      <Filter>assembly</Filter>
+    </ClInclude>
+    <ClInclude Include="x64_sub.hpp">
+      <Filter>assembly</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -12,10 +24,28 @@
     <ClCompile Include="..\pereader\flatbinary.cpp">
       <Filter>flat</Filter>
     </ClCompile>
+    <ClCompile Include="cpu.cpp">
+      <Filter>cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="register.cpp">
+      <Filter>cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="assemblycommand.cpp">
+      <Filter>assembly</Filter>
+    </ClCompile>
+    <ClCompile Include="x64_sub.cpp">
+      <Filter>assembly</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="flat">
       <UniqueIdentifier>{9bc42be2-e874-49cc-a90d-842848ed2dad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpu">
+      <UniqueIdentifier>{f5752333-235c-460f-af0b-6e61d5ec9c32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assembly">
+      <UniqueIdentifier>{b09a7848-df02-4c68-a93b-6de9acc37214}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
