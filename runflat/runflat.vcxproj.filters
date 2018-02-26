@@ -5,9 +5,6 @@
     <ClInclude Include="..\pereader\flatbinary.hpp">
       <Filter>flat</Filter>
     </ClInclude>
-    <ClInclude Include="cpu.hpp">
-      <Filter>cpu</Filter>
-    </ClInclude>
     <ClInclude Include="register.hpp">
       <Filter>cpu</Filter>
     </ClInclude>
@@ -17,15 +14,18 @@
     <ClInclude Include="x64_sub.hpp">
       <Filter>assembly</Filter>
     </ClInclude>
+    <ClInclude Include="cpu_flags.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="cpuwrapper.hpp">
+      <Filter>cpu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="..\pereader\flatbinary.cpp">
       <Filter>flat</Filter>
-    </ClCompile>
-    <ClCompile Include="cpu.cpp">
-      <Filter>cpu</Filter>
     </ClCompile>
     <ClCompile Include="register.cpp">
       <Filter>cpu</Filter>
@@ -35,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="x64_sub.cpp">
       <Filter>assembly</Filter>
+    </ClCompile>
+    <ClCompile Include="cpuwrapper.cpp">
+      <Filter>cpu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

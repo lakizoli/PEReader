@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "cpu.hpp"
+#include "cpuwrapper.hpp"
 #include "assemblycommand.hpp"
 #include <bochs/disasm/disasm.h>
 

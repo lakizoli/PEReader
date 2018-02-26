@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="avx\avx.cc" />
+    <ClCompile Include="avx\avx2.cc" />
+    <ClCompile Include="avx\avx512.cc" />
+    <ClCompile Include="avx\avx512_conflict.cc" />
+    <ClCompile Include="avx\avx512_cvt.cc" />
+    <ClCompile Include="avx\avx512_fma.cc" />
+    <ClCompile Include="avx\avx512_mask16.cc" />
+    <ClCompile Include="avx\avx512_mask32.cc" />
+    <ClCompile Include="avx\avx512_mask64.cc" />
+    <ClCompile Include="avx\avx512_mask8.cc" />
+    <ClCompile Include="avx\avx512_move.cc" />
+    <ClCompile Include="avx\avx512_pfp.cc" />
+    <ClCompile Include="avx\avx512_rcp14.cc" />
+    <ClCompile Include="avx\avx512_rsqrt14.cc" />
+    <ClCompile Include="avx\avx_cvt.cc" />
+    <ClCompile Include="avx\avx_fma.cc" />
+    <ClCompile Include="avx\avx_pfp.cc" />
+    <ClCompile Include="avx\gather.cc" />
+    <ClCompile Include="avx\tbm32.cc" />
+    <ClCompile Include="avx\tbm64.cc" />
+    <ClCompile Include="avx\xop.cc" />
+    <ClCompile Include="cpudb\amd\amd_k6_2_chomper.cc" />
+    <ClCompile Include="cpudb\amd\athlon64_clawhammer.cc" />
+    <ClCompile Include="cpudb\amd\athlon64_venice.cc" />
+    <ClCompile Include="cpudb\amd\phenomx3_8650_toliman.cc" />
+    <ClCompile Include="cpudb\amd\ryzen.cc" />
+    <ClCompile Include="cpudb\amd\trinity_apu.cc" />
+    <ClCompile Include="cpudb\amd\turion64_tyler.cc" />
+    <ClCompile Include="cpudb\amd\zambezi.cc" />
+    <ClCompile Include="cpudb\intel\atom_n270.cc" />
+    <ClCompile Include="cpudb\intel\broadwell_ult.cc" />
+    <ClCompile Include="cpudb\intel\core2_penryn_t9600.cc" />
+    <ClCompile Include="cpudb\intel\corei5_arrandale_m520.cc" />
+    <ClCompile Include="cpudb\intel\corei5_lynnfield_750.cc" />
+    <ClCompile Include="cpudb\intel\corei7_haswell_4770.cc" />
+    <ClCompile Include="cpudb\intel\corei7_ivy_bridge_3770K.cc" />
+    <ClCompile Include="cpudb\intel\corei7_sandy_bridge_2600K.cc" />
+    <ClCompile Include="cpudb\intel\core_duo_t2400_yonah.cc" />
+    <ClCompile Include="cpudb\intel\p2_klamath.cc" />
+    <ClCompile Include="cpudb\intel\p3_katmai.cc" />
+    <ClCompile Include="cpudb\intel\p4_prescott_celeron_336.cc" />
+    <ClCompile Include="cpudb\intel\p4_willamette.cc" />
+    <ClCompile Include="cpudb\intel\pentium.cc" />
+    <ClCompile Include="cpudb\intel\pentium_mmx.cc" />
+    <ClCompile Include="cpu\3dnow.cc" />
+    <ClCompile Include="cpu\access.cc" />
+    <ClCompile Include="cpu\access2.cc" />
+    <ClCompile Include="cpu\aes.cc" />
+    <ClCompile Include="cpu\apic.cc" />
+    <ClCompile Include="cpu\arith16.cc" />
+    <ClCompile Include="cpu\arith32.cc" />
+    <ClCompile Include="cpu\arith64.cc" />
+    <ClCompile Include="cpu\arith8.cc" />
+    <ClCompile Include="cpu\bcd.cc" />
+    <ClCompile Include="cpu\bit.cc" />
+    <ClCompile Include="cpu\bit16.cc" />
+    <ClCompile Include="cpu\bit32.cc" />
+    <ClCompile Include="cpu\bit64.cc" />
+    <ClCompile Include="cpu\bmi32.cc" />
+    <ClCompile Include="cpu\bmi64.cc" />
+    <ClCompile Include="cpu\call_far.cc" />
+    <ClCompile Include="cpu\cpu.cc" />
+    <ClCompile Include="cpu\cpuid.cc" />
+    <ClCompile Include="cpu\crc32.cc" />
+    <ClCompile Include="cpu\crregs.cc" />
+    <ClCompile Include="cpu\ctrl_xfer16.cc" />
+    <ClCompile Include="cpu\ctrl_xfer32.cc" />
+    <ClCompile Include="cpu\ctrl_xfer64.cc" />
+    <ClCompile Include="cpu\ctrl_xfer_pro.cc" />
+    <ClCompile Include="cpu\data_xfer16.cc" />
+    <ClCompile Include="cpu\data_xfer32.cc" />
+    <ClCompile Include="cpu\data_xfer64.cc" />
+    <ClCompile Include="cpu\data_xfer8.cc" />
+    <ClCompile Include="cpu\debugstuff.cc" />
+    <ClCompile Include="cpu\event.cc" />
+    <ClCompile Include="cpu\exception.cc" />
+    <ClCompile Include="cpu\flag_ctrl.cc" />
+    <ClCompile Include="cpu\flag_ctrl_pro.cc" />
+    <ClCompile Include="cpu\fpu_emu.cc" />
+    <ClCompile Include="cpu\generic_cpuid.cc" />
+    <ClCompile Include="cpu\icache.cc" />
+    <ClCompile Include="cpu\init.cc" />
+    <ClCompile Include="cpu\io.cc" />
+    <ClCompile Include="cpu\iret.cc" />
+    <ClCompile Include="cpu\jmp_far.cc" />
+    <ClCompile Include="cpu\load.cc" />
+    <ClCompile Include="cpu\logical16.cc" />
+    <ClCompile Include="cpu\logical32.cc" />
+    <ClCompile Include="cpu\logical64.cc" />
+    <ClCompile Include="cpu\logical8.cc" />
+    <ClCompile Include="cpu\mmx.cc" />
+    <ClCompile Include="cpu\msr.cc" />
+    <ClCompile Include="cpu\mult16.cc" />
+    <ClCompile Include="cpu\mult32.cc" />
+    <ClCompile Include="cpu\mult64.cc" />
+    <ClCompile Include="cpu\mult8.cc" />
+    <ClCompile Include="cpu\paging.cc" />
+    <ClCompile Include="cpu\proc_ctrl.cc" />
+    <ClCompile Include="cpu\protect_ctrl.cc" />
+    <ClCompile Include="cpu\rdrand.cc" />
+    <ClCompile Include="cpu\ret_far.cc" />
+    <ClCompile Include="cpu\segment_ctrl.cc" />
+    <ClCompile Include="cpu\segment_ctrl_pro.cc" />
+    <ClCompile Include="cpu\sha.cc" />
+    <ClCompile Include="cpu\shift16.cc" />
+    <ClCompile Include="cpu\shift32.cc" />
+    <ClCompile Include="cpu\shift64.cc" />
+    <ClCompile Include="cpu\shift8.cc" />
+    <ClCompile Include="cpu\smm.cc" />
+    <ClCompile Include="cpu\soft_int.cc" />
+    <ClCompile Include="cpu\sse.cc" />
+    <ClCompile Include="cpu\sse_move.cc" />
+    <ClCompile Include="cpu\sse_pfp.cc" />
+    <ClCompile Include="cpu\sse_rcp.cc" />
+    <ClCompile Include="cpu\sse_string.cc" />
+    <ClCompile Include="cpu\stack.cc" />
+    <ClCompile Include="cpu\stack16.cc" />
+    <ClCompile Include="cpu\stack32.cc" />
+    <ClCompile Include="cpu\stack64.cc" />
+    <ClCompile Include="cpu\string.cc" />
+    <ClCompile Include="cpu\svm.cc" />
+    <ClCompile Include="cpu\tasking.cc" />
+    <ClCompile Include="cpu\vapic.cc" />
+    <ClCompile Include="cpu\vm8086.cc" />
+    <ClCompile Include="cpu\vmcs.cc" />
+    <ClCompile Include="cpu\vmexit.cc" />
+    <ClCompile Include="cpu\vmfunc.cc" />
+    <ClCompile Include="cpu\vmx.cc" />
+    <ClCompile Include="cpu\xsave.cc" />
+    <ClCompile Include="decoder\disasm.cc" />
+    <ClCompile Include="decoder\fetchdecode32.cc" />
+    <ClCompile Include="decoder\fetchdecode64.cc" />
+    <ClCompile Include="fpu\f2xm1.cc" />
+    <ClCompile Include="fpu\ferr.cc" />
+    <ClCompile Include="fpu\fpatan.cc" />
+    <ClCompile Include="fpu\fprem.cc" />
+    <ClCompile Include="fpu\fpu.cc" />
+    <ClCompile Include="fpu\fpu_arith.cc" />
+    <ClCompile Include="fpu\fpu_cmov.cc" />
+    <ClCompile Include="fpu\fpu_compare.cc" />
+    <ClCompile Include="fpu\fpu_const.cc" />
+    <ClCompile Include="fpu\fpu_load_store.cc" />
+    <ClCompile Include="fpu\fpu_misc.cc" />
+    <ClCompile Include="fpu\fpu_trans.cc" />
+    <ClCompile Include="fpu\fsincos.cc" />
+    <ClCompile Include="fpu\fyl2x.cc" />
+    <ClCompile Include="fpu\poly.cc" />
+    <ClCompile Include="fpu\softfloat-muladd.cc" />
+    <ClCompile Include="fpu\softfloat-round-pack.cc" />
+    <ClCompile Include="fpu\softfloat-specialize.cc" />
+    <ClCompile Include="fpu\softfloat.cc" />
+    <ClCompile Include="fpu\softfloat16.cc" />
+    <ClCompile Include="fpu\softfloatx80.cc" />
+    <ClCompile Include="instrument.cc" />
+    <ClCompile Include="memory\memory.cpp" />
+    <ClCompile Include="pc_system.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bswap.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="cpudb.h" />
+    <ClInclude Include="cpudb\amd\amd_k6_2_chomper.h" />
+    <ClInclude Include="cpudb\amd\athlon64_clawhammer.h" />
+    <ClInclude Include="cpudb\amd\athlon64_venice.h" />
+    <ClInclude Include="cpudb\amd\phenomx3_8650_toliman.h" />
+    <ClInclude Include="cpudb\amd\ryzen.h" />
+    <ClInclude Include="cpudb\amd\trinity_apu.h" />
+    <ClInclude Include="cpudb\amd\turion64_tyler.h" />
+    <ClInclude Include="cpudb\amd\zambezi.h" />
+    <ClInclude Include="cpudb\intel\atom_n270.h" />
+    <ClInclude Include="cpudb\intel\broadwell_ult.h" />
+    <ClInclude Include="cpudb\intel\core2_penryn_t9600.h" />
+    <ClInclude Include="cpudb\intel\corei5_arrandale_m520.h" />
+    <ClInclude Include="cpudb\intel\corei5_lynnfield_750.h" />
+    <ClInclude Include="cpudb\intel\corei7_haswell_4770.h" />
+    <ClInclude Include="cpudb\intel\corei7_ivy_bridge_3770K.h" />
+    <ClInclude Include="cpudb\intel\corei7_sandy_bridge_2600K.h" />
+    <ClInclude Include="cpudb\intel\core_duo_t2400_yonah.h" />
+    <ClInclude Include="cpudb\intel\p2_klamath.h" />
+    <ClInclude Include="cpudb\intel\p3_katmai.h" />
+    <ClInclude Include="cpudb\intel\p4_prescott_celeron_336.h" />
+    <ClInclude Include="cpudb\intel\p4_willamette.h" />
+    <ClInclude Include="cpudb\intel\pentium.h" />
+    <ClInclude Include="cpudb\intel\pentium_mmx.h" />
+    <ClInclude Include="cpu\access.h" />
+    <ClInclude Include="cpu\apic.h" />
+    <ClInclude Include="cpu\cpu.h" />
+    <ClInclude Include="cpu\cpuid.h" />
+    <ClInclude Include="cpu\cpustats.h" />
+    <ClInclude Include="cpu\crregs.h" />
+    <ClInclude Include="cpu\descriptor.h" />
+    <ClInclude Include="cpu\generic_cpuid.h" />
+    <ClInclude Include="cpu\i387.h" />
+    <ClInclude Include="cpu\icache.h" />
+    <ClInclude Include="cpu\lazy_flags.h" />
+    <ClInclude Include="cpu\scalar_arith.h" />
+    <ClInclude Include="cpu\simd_compare.h" />
+    <ClInclude Include="cpu\simd_int.h" />
+    <ClInclude Include="cpu\simd_pfp.h" />
+    <ClInclude Include="cpu\smm.h" />
+    <ClInclude Include="cpu\stack.h" />
+    <ClInclude Include="cpu\svm.h" />
+    <ClInclude Include="cpu\tlb.h" />
+    <ClInclude Include="cpu\vmx.h" />
+    <ClInclude Include="cpu\xmm.h" />
+    <ClInclude Include="decoder\decoder.h" />
+    <ClInclude Include="decoder\fetchdecode.h" />
+    <ClInclude Include="decoder\fetchdecode_avx.h" />
+    <ClInclude Include="decoder\fetchdecode_evex.h" />
+    <ClInclude Include="decoder\fetchdecode_opmap.h" />
+    <ClInclude Include="decoder\fetchdecode_opmap_0f38.h" />
+    <ClInclude Include="decoder\fetchdecode_opmap_0f3a.h" />
+    <ClInclude Include="decoder\fetchdecode_x87.h" />
+    <ClInclude Include="decoder\fetchdecode_xop.h" />
+    <ClInclude Include="decoder\ia_opcodes.h" />
+    <ClInclude Include="decoder\instr.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="fpu\control_w.h" />
+    <ClInclude Include="fpu\fpu_constant.h" />
+    <ClInclude Include="fpu\softfloat-compare.h" />
+    <ClInclude Include="fpu\softfloat-macros.h" />
+    <ClInclude Include="fpu\softfloat-round-pack.h" />
+    <ClInclude Include="fpu\softfloat-specialize.h" />
+    <ClInclude Include="fpu\softfloat.h" />
+    <ClInclude Include="fpu\softfloatx80.h" />
+    <ClInclude Include="fpu\status_w.h" />
+    <ClInclude Include="fpu\tag_w.h" />
+    <ClInclude Include="instrument.h" />
+    <ClInclude Include="logfunctions.h" />
+    <ClInclude Include="memory\memory.h" />
+    <ClInclude Include="osdep.h" />
+    <ClInclude Include="pc_system.h" />
+    <ClInclude Include="x86cpu.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cpudb\amd\amd_k6_2_chomper.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\athlon64_clawhammer.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\athlon64_venice.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\phenomx3_8650_toliman.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\ryzen.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\trinity_apu.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\turion64_tyler.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\amd\zambezi.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\atom_n270.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\broadwell_ult.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\core2_penryn_t9600.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\corei5_arrandale_m520.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\corei5_lynnfield_750.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\corei7_haswell_4770.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\corei7_ivy_bridge_3770K.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\corei7_sandy_bridge_2600K.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\core_duo_t2400_yonah.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\p2_klamath.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\p3_katmai.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\p4_prescott_celeron_336.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\p4_willamette.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\pentium.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+    <Text Include="cpudb\intel\pentium_mmx.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Text>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{B1EF8DCB-D8EE-479B-AE5F-4F49744DCFD7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>x86Cpu</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

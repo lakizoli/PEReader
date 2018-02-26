@@ -165,7 +165,8 @@
   <ItemGroup>
     <ClInclude Include="..\pereader\flatbinary.hpp" />
     <ClInclude Include="assemblycommand.hpp" />
-    <ClInclude Include="cpu.hpp" />
+    <ClInclude Include="cpuwrapper.hpp" />
+    <ClInclude Include="cpu_flags.hpp" />
     <ClInclude Include="register.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="x64_sub.hpp" />
@@ -173,7 +174,7 @@
   <ItemGroup>
     <ClCompile Include="..\pereader\flatbinary.cpp" />
     <ClCompile Include="assemblycommand.cpp" />
-    <ClCompile Include="cpu.cpp" />
+    <ClCompile Include="cpuwrapper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="register.cpp" />
     <ClCompile Include="stdafx.cpp">

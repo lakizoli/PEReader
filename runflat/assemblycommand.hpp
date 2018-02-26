@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cpu.hpp"
+#include "cpuwrapper.hpp"
 
 #define DECLARE_ASSEMBLY_COMMAND(cls)									\
 	static std::shared_ptr<AssemblyCommand> __create () {				\
@@ -12,16 +12,7 @@
 	uint32_t cls::__creator_registration = AssemblyCommand::RegisterAssebmlyCommand (cmd, cls::__create);
 
 class AssemblyCommand {
-//Definitions
-public:
-	enum class OperandTypes {
-		Unknown,
-		Register,
-		Memory,
-		Immediate
-	};
-
-//Construction
+	//Construction
 protected:
 	AssemblyCommand ();
 
@@ -35,12 +26,49 @@ public:
 private:
 	static std::map<std::string, AssemblyCommandCreator>& GetCreatorMap ();
 
-//Interface
+	//Interface
 public:
 	virtual bool Run (Cpu& cpu, const Cpu::Command& command) = 0;
 
 //Implementation
 protected:
-	static uint32_t GetOperandSize (const std::string& operand);
-};
+	template<typename T, T lowRangeLimit, T highRangeLimit>
+	static bool ExecuteUnsignedOperand (const Cpu::Command& command, uint32_t idx, T& result) {
+		if (sizeof (T) != command.opSizes[idx]) {
+			return false;
+		}
 
+		const std::string& op = command.cmd[idx + 1];
+		switch (command.ops[idx]) {
+		case Cpu::OperandTypes::Immediate:
+		{
+			size_t posHex = op.find ('x');
+			if (posHex == 1 && op.length () > 2) { //Positive hexadecimal value
+				uint64_t val = std::stoull (op.substr (posHex + 1), nullptr, 16);
+				if (val < lowRangeLimit || val > highRangeLimit) { //Range check
+					return false;
+				}
+
+				result = (T) val;
+				return true;
+			}
+
+			//Unhandled immediate value format
+			break;
+		}
+		case Cpu::OperandTypes::Memory:
+		{
+			break;
+		}
+		case Cpu::OperandTypes::Register:
+		{
+			break;
+		}
+		default:
+			break;
+		}
+
+		//All unhandled case mapped to an error in execution...
+		return false;
+	}
+};
