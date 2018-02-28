@@ -20,6 +20,9 @@
     <ClInclude Include="cpuwrapper.hpp">
       <Filter>cpu</Filter>
     </ClInclude>
+    <ClInclude Include="analyzer.hpp">
+      <Filter>analyze</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -39,6 +42,9 @@
     <ClCompile Include="cpuwrapper.cpp">
       <Filter>cpu</Filter>
     </ClCompile>
+    <ClCompile Include="analyzer.cpp">
+      <Filter>analyze</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="flat">
@@ -49,6 +55,9 @@
     </Filter>
     <Filter Include="assembly">
       <UniqueIdentifier>{b09a7848-df02-4c68-a93b-6de9acc37214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="analyze">
+      <UniqueIdentifier>{5b5cc924-aa91-4fff-ae05-501ef9e3abb5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
