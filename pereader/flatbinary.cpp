@@ -178,6 +178,7 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 		return nullptr;
 	}
 
+	std::string lastModuleName;
 	uint64_t pos = 0;
 	for (uint64_t i = 0; i < importCount; ++i) {
 		uint16_t nameLength = 0;
@@ -194,6 +195,18 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 				return nullptr;
 			}
 		}
+
+		//HACK
+		//TODO: write the offsets to the saved flat binary!
+		size_t posModuleEnd = name.find (']');
+		if (posModuleEnd != std::string::npos) {
+			std::string moduleName = name.substr (0, posModuleEnd + 1);
+			if (moduleName != lastModuleName && binary->mImports.size () > 0) {
+				pos += iatItemSize; //Ignore null item at module ends in IAT
+			}
+			lastModuleName = moduleName;
+		}
+		//END HACK
 
 		binary->mImports.emplace (pos, name);
 		pos += iatItemSize;

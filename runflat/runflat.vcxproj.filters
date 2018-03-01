@@ -23,6 +23,12 @@
     <ClInclude Include="analyzer.hpp">
       <Filter>analyze</Filter>
     </ClInclude>
+    <ClInclude Include="asmfunction.hpp">
+      <Filter>analyze</Filter>
+    </ClInclude>
+    <ClInclude Include="asmlink.hpp">
+      <Filter>analyze</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -43,6 +49,12 @@
       <Filter>cpu</Filter>
     </ClCompile>
     <ClCompile Include="analyzer.cpp">
+      <Filter>analyze</Filter>
+    </ClCompile>
+    <ClCompile Include="asmfunction.cpp">
+      <Filter>analyze</Filter>
+    </ClCompile>
+    <ClCompile Include="asmlink.cpp">
       <Filter>analyze</Filter>
     </ClCompile>
   </ItemGroup>

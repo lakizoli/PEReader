@@ -165,6 +165,8 @@
   <ItemGroup>
     <ClInclude Include="..\pereader\flatbinary.hpp" />
     <ClInclude Include="analyzer.hpp" />
+    <ClInclude Include="asmfunction.hpp" />
+    <ClInclude Include="asmlink.hpp" />
     <ClInclude Include="assemblycommand.hpp" />
     <ClInclude Include="cpuwrapper.hpp" />
     <ClInclude Include="cpu_flags.hpp" />
@@ -175,6 +177,8 @@
   <ItemGroup>
     <ClCompile Include="..\pereader\flatbinary.cpp" />
     <ClCompile Include="analyzer.cpp" />
+    <ClCompile Include="asmfunction.cpp" />
+    <ClCompile Include="asmlink.cpp" />
     <ClCompile Include="assemblycommand.cpp" />
     <ClCompile Include="cpuwrapper.cpp" />
     <ClCompile Include="main.cpp" />
