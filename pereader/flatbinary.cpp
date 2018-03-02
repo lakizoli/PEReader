@@ -246,7 +246,7 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 			}
 		}
 
-		binary->mExports.emplace (pos, name);
+		binary->mExports.emplace (exportAddress, name);
 	}
 
 	//Read data

@@ -72,6 +72,10 @@ public:
 		return mImports;
 	}
 
+	const std::map<uint64_t, std::string>& GetExports () const {
+		return mExports;
+	}
+
 	const std::vector<uint8_t>& GetBinary () const {
 		return mBinary;
 	}

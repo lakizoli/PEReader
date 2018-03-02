@@ -11,7 +11,7 @@ class ASMFunction {
 
 public:
 	ASMFunction (uint64_t virtualAddress, uint64_t length, const std::vector<std::shared_ptr<ASMLink>>& links,
-		const std::map<uint64_t, std::string>& asmSource, const std::string& namePrefix = std::string ());
+		const std::map<uint64_t, std::string>& asmSource, const std::string& optionalName = std::string ());
 
 	~ASMFunction () {}
 

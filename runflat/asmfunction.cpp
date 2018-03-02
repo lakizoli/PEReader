@@ -2,19 +2,18 @@
 #include "asmfunction.hpp"
 
 ASMFunction::ASMFunction (uint64_t virtualAddress, uint64_t length, const std::vector<std::shared_ptr<ASMLink>>& links,
-	const std::map<uint64_t, std::string>& asmSource, const std::string& namePrefix) :
+	const std::map<uint64_t, std::string>& asmSource, const std::string& optionalName) :
 	mVirtualAddress (virtualAddress),
 	mLength (length),
 	mAsmSource (asmSource)
 {
 	//Compose name
 	std::stringstream ss;
-	if (namePrefix.empty ()) {
-		ss << "asmfunc_";
-	} else {
-		ss << namePrefix << "_";
-	}
+	ss << "fn_";
 	ss << std::hex << std::setfill ('0') << std::setw (16) << virtualAddress;
+	if (!optionalName.empty ()) {
+		ss << "_(" << optionalName << ")";
+	}
 
 	mName = ss.str ();
 

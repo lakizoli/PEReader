@@ -16,7 +16,7 @@ class Analyzer {
 	std::tuple<bool, int64_t> CalculateOperand1Offset (const std::string & command) const;
 	std::tuple<bool, uint64_t> DetectImportCall (uint64_t targetIP) const;
 	bool DetectNullSubCall (uint64_t targetIP) const;
-	std::shared_ptr<ASMFunction> WalkFunction (uint64_t address) const;
+	std::shared_ptr<ASMFunction> WalkFunction (uint64_t address, const std::string& name) const;
 
 public:
 	Analyzer (const std::string& flatPath, const std::string& destPath);

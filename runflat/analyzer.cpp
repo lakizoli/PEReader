@@ -124,7 +124,7 @@ bool Analyzer::DetectNullSubCall (uint64_t targetIP) const {
 	return false;
 }
 
-std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address) const {
+std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std::string& name) const {
 	const std::vector<uint8_t>& data = mBinary->GetBinary ();
 	uint64_t virtualBase = mBinary->GetVirtualBase ();
 	disassembler dis;
@@ -213,8 +213,10 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address) const {
 		ip += commandLength;
 	} while (!endFound);
 
+	//TODO: remove mangling and all other special chars from optional function name...
+
 	uint64_t funcLength = ip - startIP;
-	return std::make_shared<ASMFunction> (address, funcLength, links, asmSource);
+	return std::make_shared<ASMFunction> (address, funcLength, links, asmSource, name);
 }
 
 Analyzer::Analyzer (const std::string& flatPath, const std::string& destPath) :
@@ -229,16 +231,32 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 
 	//Walk functions on all code path
 	std::set<uint64_t> functionAddresses;
+	std::map<uint64_t, std::string> functionNames;
+
+	//Add entry point of the executable
 	functionAddresses.insert (mBinary->GetEntryPoint ());
+	functionNames.emplace (mBinary->GetEntryPoint (), "StartExecutable");
 
-	//TODO: add dll exports...
+	//Add all exported functions
+	const std::map<uint64_t, std::string>& exports = mBinary->GetExports ();
+	for (const auto it : exports) {
+		functionAddresses.insert (it.first);
+		functionNames.emplace (it.first, it.second);
+	}
 
+	//Analyze all function
 	while (functionAddresses.size () > 0) {
 		auto itFirst = functionAddresses.begin ();
 		uint64_t virtualAddress = *itFirst;
 		functionAddresses.erase (itFirst);
 
-		std::shared_ptr<ASMFunction> func = WalkFunction (virtualAddress);
+		auto itName = functionNames.find (virtualAddress);
+		std::string functionName;
+		if (itName != functionNames.end ()) {
+			functionName = itName->second;
+		}
+
+		std::shared_ptr<ASMFunction> func = WalkFunction (virtualAddress, functionName);
 		if (func) {
 			mFunctions.emplace (func->GetVirtualAddress (), func);
 
