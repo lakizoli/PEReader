@@ -87,6 +87,12 @@ bool Analyzer::IsImportCall (uint64_t targetIP, const std::map<uint64_t, std::st
 	return imports.find(targetIP) != imports.end();
 }
 
+bool Analyzer::IsDataSegmentCall (uint64_t targetIP) const {
+	uint64_t virtualBase = mBinary->GetVirtualBase ();
+	uint64_t codeSegmentEndAddress = virtualBase + mBinary->GetCodeSize ();
+	return targetIP < virtualBase || targetIP >= codeSegmentEndAddress;
+}
+
 bool Analyzer::DetectNullSubCall (uint64_t targetIP) const {
 	const std::map<uint64_t, std::string>& imports = mBinary->GetImports ();
 	if (imports.size () > 0) {
@@ -162,6 +168,8 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 					linkType = ASMLink::LinkTypes::ImportCall;
 				} else if (IsImportCall (targetIP, mBinary->GetDelayImports ())) { //Delayed import call
 					linkType = ASMLink::LinkTypes::DelayedImportCall;
+				} else if (IsDataSegmentCall (targetIP)) {
+					linkType = ASMLink::LinkTypes::DataSegmentCall;
 				}
 			}
 
@@ -191,6 +199,8 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 					linkType = ASMLink::LinkTypes::DelayedImportJump;
 				} else if (DetectNullSubCall (targetIP)) { //Null sub jump
 					linkType = ASMLink::LinkTypes::NullSubJump;
+				} else if (IsDataSegmentCall (targetIP)) { //Data segment targeted dynamic jump
+					linkType = ASMLink::LinkTypes::DataSegmentJump;
 				}
 			} else { //Conditional jump
 				linkType = ASMLink::LinkTypes::ConditionalJump;
@@ -324,6 +334,10 @@ void Analyzer::SaveAssemblyFiles () const {
 							case ASMLink::LinkTypes::DynamicCall:
 							case ASMLink::LinkTypes::DynamicJump:
 								sourceFile << "; dynamic";
+								break;
+							case ASMLink::LinkTypes::DataSegmentCall:
+							case ASMLink::LinkTypes::DataSegmentJump:
+								sourceFile << "; data segment address at: 0x" << std::hex << std::setw (16) << std::right << std::setfill ('0') << link->GetTargetAddress ();
 								break;
 							default:
 								break;

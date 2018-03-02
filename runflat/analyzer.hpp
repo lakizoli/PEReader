@@ -15,6 +15,7 @@ class Analyzer {
 	std::tuple<bool, int64_t> ConvertRelativeAddress (const std::string& relativeAddress) const;
 	std::tuple<bool, int64_t> CalculateOperand1Offset (const std::string & command) const;
 	static bool IsImportCall (uint64_t targetIP, const std::map<uint64_t, std::string>& imports);
+	bool IsDataSegmentCall (uint64_t targetIP) const;
 	bool DetectNullSubCall (uint64_t targetIP) const;
 	std::shared_ptr<ASMFunction> WalkFunction (uint64_t address, const std::string& name) const;
 

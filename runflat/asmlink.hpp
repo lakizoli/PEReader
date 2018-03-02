@@ -9,9 +9,11 @@ public:
 		ImportCall,
 		DelayedImportCall,
 		DynamicCall,
+		DataSegmentCall,
 
 		DirectJump,
 		DynamicJump,
+		DataSegmentJump,
 		ConditionalJump,
 		ImportJump,
 		DelayedImportJump,

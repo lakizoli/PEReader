@@ -19,6 +19,7 @@ private:
 	uint64_t mVirtualSize; ///< The size of the flat binary in the virtual address space.
 	uint64_t mStackSize; ///< The size of the stack have to be allocated.
 	uint64_t mHeapSize; ///< The size of the heap have to be allocated.
+	uint64_t mCodeSize; ///< The size of the flat code segment.
 	uint64_t mEntryPoint; ///< The entry point of the executable.
 	std::map<uint64_t, std::string> mImports; ///< The imports stored in order of the address table. (format: "[module]function". Ordinal references have the format: "ordinal:{index}".)
 	std::map<uint64_t, std::string> mDelayImports; ///< The imports stored in order of the address table. (format: "[module]function". Ordinal references have the format: "ordinal:{index}".)
@@ -60,6 +61,10 @@ public:
 
 	uint64_t GetHeapSize () const {
 		return mHeapSize;
+	}
+
+	uint64_t GetCodeSize () const {
+		return mCodeSize;
 	}
 
 	uint64_t GetEntryPoint () const {

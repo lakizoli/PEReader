@@ -12,6 +12,7 @@ FlatBinary::FlatBinary () :
 	mVirtualSize (0),
 	mStackSize (0),
 	mHeapSize (0),
+	mCodeSize (0),
 	mEntryPoint (0)
 {
 }
@@ -98,6 +99,7 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 		binary->mVirtualSize = header->SizeOfImage;
 		binary->mStackSize = header->SizeOfStackReserve;
 		binary->mHeapSize = header->SizeOfHeapReserve;
+		binary->mCodeSize = header->SizeOfCode;
 		binary->mEntryPoint = header->AddressOfEntryPoint;
 
 		break;
@@ -110,6 +112,7 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 		binary->mVirtualSize = header->SizeOfImage;
 		binary->mStackSize = header->SizeOfStackReserve;
 		binary->mHeapSize = header->SizeOfHeapReserve;
+		binary->mCodeSize = header->SizeOfCode;
 		binary->mEntryPoint = header->AddressOfEntryPoint;
 
 		break;
@@ -222,6 +225,11 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 		return nullptr;
 	}
 
+	file.read ((char*) &binary->mCodeSize, sizeof (mCodeSize));
+	if (!file) {
+		return nullptr;
+	}
+
 	file.read ((char*) &binary->mEntryPoint, sizeof (mEntryPoint));
 	if (!file) {
 		return nullptr;
@@ -307,6 +315,11 @@ bool FlatBinary::Save (const std::string& path) {
 	}
 
 	file.write ((const char*) &mHeapSize, sizeof (mHeapSize));
+	if (!file) {
+		return false;
+	}
+
+	file.write ((const char*) &mCodeSize, sizeof (mCodeSize));
 	if (!file) {
 		return false;
 	}
