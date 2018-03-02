@@ -36,10 +36,18 @@ void PEHeader::WalkImportFunctions (bool delayLoaded, uint32_t nameTableRVA, uin
 	if (importNameTable) {
 		uint32_t iatRVA = iatTableRVA;
 		while (*importNameTable) {
-			const uint8_t* importFunctionDescriptorAddress = sectionTable.GetInstanceOnVirtualAddress<uint8_t> (*importNameTable);
-			if (importFunctionDescriptorAddress) {
-				PEImportByName importByName = PEImportByName::Read (importFunctionDescriptorAddress);
-				callback (delayLoaded, std::string (moduleName), importByName.Name, iatRVA);
+			if (IsOrdinalNameTable<T> (*importNameTable)) {
+				uint16_t ordinalImport = GetOrdinalFromNameTable (*importNameTable);
+
+				std::stringstream ss;
+				ss << "ordinal:" << ordinalImport;
+				callback (delayLoaded, std::string (moduleName), ss.str (), iatRVA);
+			} else {
+				const uint8_t* importFunctionDescriptorAddress = sectionTable.GetInstanceOnVirtualAddress<uint8_t> (*importNameTable);
+				if (importFunctionDescriptorAddress) {
+					PEImportByName importByName = PEImportByName::Read (importFunctionDescriptorAddress);
+					callback (delayLoaded, std::string (moduleName), importByName.Name, iatRVA);
+				}
 			}
 
 			iatRVA += sizeof (T);

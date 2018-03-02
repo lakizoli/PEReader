@@ -4,13 +4,17 @@ class ASMLink {
 public:
 	enum class LinkTypes {
 		Undefined,
+
 		DirectCall,
 		ImportCall,
+		DelayedImportCall,
 		DynamicCall,
+
 		DirectJump,
 		DynamicJump,
 		ConditionalJump,
 		ImportJump,
+		DelayedImportJump,
 		NullSubJump ///< Special jump to the tail function in IAT (raise nullptr exception!)
 	};
 

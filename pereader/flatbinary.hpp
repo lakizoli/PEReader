@@ -20,12 +20,14 @@ private:
 	uint64_t mStackSize; ///< The size of the stack have to be allocated.
 	uint64_t mHeapSize; ///< The size of the heap have to be allocated.
 	uint64_t mEntryPoint; ///< The entry point of the executable.
-	uint64_t mImportTableAddress; ///< The virtual address of the import table in the flat binary. (Take care: item size in address table depends on binary type! 32 bit executables have 4 byte item size, and 64 bit executables have 8 byte item size!)
-	std::map<uint64_t, std::string> mImports; ///< The imports stored in order of the address table. (format: "[module]function". The module can be prefixed in the saved binary with a '+' before the opening square bracket for sign the offset shift in the IAT table!)
+	std::map<uint64_t, std::string> mImports; ///< The imports stored in order of the address table. (format: "[module]function". Ordinal references have the format: "ordinal:{index}".)
+	std::map<uint64_t, std::string> mDelayImports; ///< The imports stored in order of the address table. (format: "[module]function". Ordinal references have the format: "ordinal:{index}".)
 	std::map<uint64_t, std::string> mExports; ///< The exports of the module.
 	std::vector<uint8_t> mBinary; ///< The flat binary.
 
 	FlatBinary ();
+	static bool LoadFunctionTable (std::fstream& file, std::map<uint64_t, std::string>& functionTable);
+	static bool SaveFunctionTable (const std::map<uint64_t, std::string>& functionTable, std::fstream& file);
 
 public:
 #ifdef FLATBIN_COMPLIE_GENERATION
@@ -64,12 +66,12 @@ public:
 		return mEntryPoint;
 	}
 
-	uint64_t GetImportTableAddress () const {
-		return mImportTableAddress;
-	}
-
 	const std::map<uint64_t, std::string>& GetImports () const {
 		return mImports;
+	}
+
+	const std::map<uint64_t, std::string>& GetDelayImports () const {
+		return mDelayImports;
 	}
 
 	const std::map<uint64_t, std::string>& GetExports () const {

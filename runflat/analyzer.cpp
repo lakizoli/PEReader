@@ -83,17 +83,8 @@ std::tuple<bool, int64_t> Analyzer::CalculateOperand1Offset (const std::string& 
 	return std::make_tuple (true, callOffset);
 }
 
-std::tuple<bool, uint64_t> Analyzer::DetectImportCall (uint64_t targetIP) const {
-	const std::map<uint64_t, std::string>& imports = mBinary->GetImports ();
-	uint64_t importTableAddress = mBinary->GetImportTableAddress ();
-	if (targetIP >= importTableAddress) {
-		auto itImport = imports.find (targetIP - importTableAddress);
-		if (itImport != imports.end ()) {
-			return std::make_tuple (true, itImport->first);
-		}
-	}
-
-	return std::make_tuple (false, 0ull);
+bool Analyzer::IsImportCall (uint64_t targetIP, const std::map<uint64_t, std::string>& imports) {
+	return imports.find(targetIP) != imports.end();
 }
 
 bool Analyzer::DetectNullSubCall (uint64_t targetIP) const {
@@ -114,8 +105,7 @@ bool Analyzer::DetectNullSubCall (uint64_t targetIP) const {
 			return false;
 		}
 
-		uint64_t importTableAddress = mBinary->GetImportTableAddress ();
-		uint64_t nullSubAddress = importTableAddress + itLastImport->first + 2 * iatItemSize;
+		uint64_t nullSubAddress = itLastImport->first + 2 * iatItemSize;
 		if (targetIP == nullSubAddress) {
 			return true;
 		}
@@ -168,10 +158,10 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 				linkType = ASMLink::LinkTypes::DirectCall;
 
 				//Detect special calls
-				auto importRes = DetectImportCall (targetIP);
-				if (std::get<0> (importRes)) { //Import call
+				if (IsImportCall (targetIP, mBinary->GetImports ())) { //Import call
 					linkType = ASMLink::LinkTypes::ImportCall;
-					targetIP = std::get<1> (importRes);
+				} else if (IsImportCall (targetIP, mBinary->GetDelayImports ())) { //Delayed import call
+					linkType = ASMLink::LinkTypes::DelayedImportCall;
 				}
 			}
 
@@ -195,10 +185,10 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 				linkType = ASMLink::LinkTypes::DirectJump;
 
 				//Detect special jumps
-				auto importRes = DetectImportCall (targetIP);
-				if (std::get<0> (importRes)) { //Import jump
+				if (IsImportCall (targetIP, mBinary->GetImports ())) { //Import jump
 					linkType = ASMLink::LinkTypes::ImportJump;
-					targetIP = std::get<1> (importRes);
+				}  else if (IsImportCall (targetIP, mBinary->GetDelayImports ())) { //Delayed import jump
+					linkType = ASMLink::LinkTypes::DelayedImportJump;
 				} else if (DetectNullSubCall (targetIP)) { //Null sub jump
 					linkType = ASMLink::LinkTypes::NullSubJump;
 				}
@@ -311,6 +301,15 @@ void Analyzer::SaveAssemblyFiles () const {
 								auto itImport = imports.find (link->GetTargetAddress ());
 								if (itImport != imports.end ()) {
 									sourceFile << "; import: " << itImport->second;
+								}
+								break;
+							}
+							case ASMLink::LinkTypes::DelayedImportCall:
+							case ASMLink::LinkTypes::DelayedImportJump: {
+								const std::map<uint64_t, std::string>& imports = mBinary->GetDelayImports ();
+								auto itImport = imports.find (link->GetTargetAddress ());
+								if (itImport != imports.end ()) {
+									sourceFile << "; delayed import: " << itImport->second;
 								}
 								break;
 							}

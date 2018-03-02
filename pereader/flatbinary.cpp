@@ -10,9 +10,75 @@ FlatBinary::FlatBinary () :
 	mType (BinaryTypes::Unknown),
 	mVirtualBase (0),
 	mVirtualSize (0),
-	mEntryPoint (0),
-	mImportTableAddress (0)
+	mStackSize (0),
+	mHeapSize (0),
+	mEntryPoint (0)
 {
+}
+
+bool FlatBinary::LoadFunctionTable (std::fstream& file, std::map<uint64_t, std::string>& functionTable) {
+	uint64_t importCount = 0;
+	file.read ((char*) &importCount, sizeof (importCount));
+	if (!file) {
+		return false;
+	}
+
+	for (uint64_t i = 0; i < importCount; ++i) {
+		uint64_t virtualAddress = 0;
+		file.read ((char*) &virtualAddress, sizeof (virtualAddress));
+		if (!file) {
+			return false;
+		}
+
+		uint16_t nameLength = 0;
+		file.read ((char*) &nameLength, sizeof (nameLength));
+		if (!file) {
+			return false;
+		}
+
+		std::string name;
+		if (nameLength > 0) {
+			name.resize (nameLength);
+			file.read (&name[0], nameLength);
+			if (!file) {
+				return false;
+			}
+		}
+
+		functionTable.emplace (virtualAddress, name);
+	}
+
+	return true;
+}
+
+bool FlatBinary::SaveFunctionTable (const std::map<uint64_t, std::string>& functionTable, std::fstream& file) {
+	uint64_t exportCount = functionTable.size ();
+	file.write ((const char*) &exportCount, sizeof (exportCount));
+	if (!file) {
+		return false;
+	}
+
+	for (auto& it : functionTable) {
+		//Write export's virtual address
+		file.write ((const char*) &it.first, sizeof (it.first));
+		if (!file) {
+			return false;
+		}
+
+		//Write export name
+		uint16_t nameLength = (uint16_t) it.second.length ();
+		file.write ((const char*) &nameLength, sizeof (nameLength));
+		if (!file) {
+			return false;
+		}
+
+		file.write (it.second.c_str (), nameLength);
+		if (!file) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 #ifdef FLATBIN_COMPLIE_GENERATION
@@ -74,15 +140,15 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 	}
 
 	//Collect imports
-	const PEDataDirectory& iat = peHeader.optionalHeader.dataDirectories[(uint16_t) PEOptionalHeader::DirectoryEntries::IMAGE_DIRECTORY_ENTRY_IAT];
-	binary->mImportTableAddress = iat.VirtualAddress;
-
 	if (!peHeader.EnumerateImports ([binary] (bool delayLoaded, const std::string& moduleName, const std::string& importFunction, uint64_t iatAddress) -> void {
-		uint64_t iatOffset = iatAddress - binary->mImportTableAddress;
-
 		std::stringstream ss;
 		ss << "[" << moduleName << "]" << importFunction;
-		binary->mImports.emplace (iatOffset, ss.str ());
+
+		if (delayLoaded) { //Delay loaded import functions
+			binary->mDelayImports.emplace (iatAddress, ss.str ());
+		} else { //Prior start imported functions
+			binary->mImports.emplace (iatAddress, ss.str ());
+		}
 	})) {
 		return nullptr;
 	}
@@ -161,92 +227,19 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 		return nullptr;
 	}
 
-	file.read ((char*) &binary->mImportTableAddress, sizeof (mImportTableAddress));
-	if (!file) {
-		return nullptr;
-	}
-
 	//Read imports
-	uint64_t importCount = 0;
-	file.read ((char*) &importCount, sizeof (importCount));
-	if (!file) {
+	if (!LoadFunctionTable (file, binary->mImports)) {
 		return nullptr;
 	}
 
-	uint64_t iatItemSize = 0;
-	switch (binary->mType) {
-	case BinaryTypes::Bit32:
-		iatItemSize = 4;
-		break;
-	case BinaryTypes::Bit64:
-		iatItemSize = 8;
-		break;
-	default:
+	//Read delayed imports
+	if (!LoadFunctionTable (file, binary->mDelayImports)) {
 		return nullptr;
-	}
-
-	std::string lastModuleName;
-	uint64_t pos = 0;
-	for (uint64_t i = 0; i < importCount; ++i) {
-		uint16_t nameLength = 0;
-		file.read ((char*) &nameLength, sizeof (nameLength));
-		if (!file) {
-			return nullptr;
-		}
-
-		bool havePosShift = false;
-		std::string name;
-		if (nameLength > 0) {
-			name.resize (nameLength);
-			file.read (&name[0], nameLength);
-			if (!file) {
-				return nullptr;
-			}
-
-			if (name[0] == '+') {
-				havePosShift = true;
-				name = name.substr (1);
-			}
-		}
-
-		if (havePosShift) {
-			pos += iatItemSize; //Ignore null item at module ends in IAT
-		}
-
-		binary->mImports.emplace (pos, name);
-		pos += iatItemSize;
 	}
 
 	//Read exports
-	uint64_t exportCount = 0;
-	file.read ((char*) &exportCount, sizeof (exportCount));
-	if (!file) {
+	if (!LoadFunctionTable (file, binary->mExports)) {
 		return nullptr;
-	}
-
-	for (uint64_t i = 0; i < exportCount; ++i) {
-		uint64_t exportAddress = 0;
-		file.read ((char*) &exportAddress, sizeof (exportAddress));
-		if (!file) {
-			return nullptr;
-		}
-
-		uint16_t nameLength = 0;
-		file.read ((char*) &nameLength, sizeof (nameLength));
-		if (!file) {
-			return nullptr;
-		}
-
-		std::string name;
-		if (nameLength > 0) {
-			name.resize (nameLength);
-			file.read (&name[0], nameLength);
-			if (!file) {
-				return nullptr;
-			}
-		}
-
-		binary->mExports.emplace (exportAddress, name);
 	}
 
 	//Read data
@@ -323,81 +316,19 @@ bool FlatBinary::Save (const std::string& path) {
 		return false;
 	}
 
-	file.write ((const char*) &mImportTableAddress, sizeof (mImportTableAddress));
-	if (!file) {
-		return false;
-	}
-
 	//Write imports
-	uint64_t importCount = mImports.size ();
-	file.write ((const char*) &importCount, sizeof (importCount));
-	if (!file) {
+	if (!SaveFunctionTable (mImports, file)) {
 		return false;
 	}
 
-	std::string lastModuleName;
-	for (auto& it : mImports) {
-		//Write offset shift
-		bool haveOffsetShift = false;
-
-		size_t posModuleNameEnd = it.second.find (']');
-		if (posModuleNameEnd != std::string::npos) {
-			std::string moduleName = it.second.substr (0, posModuleNameEnd + 1);
-			if (!lastModuleName.empty () && moduleName != lastModuleName) {
-				haveOffsetShift = true;
-			}
-			lastModuleName = moduleName;
-		}
-
-		//Write module name with offset shift sign
-		uint16_t nameLength = (uint16_t) it.second.length ();
-		if (haveOffsetShift) {
-			++nameLength;
-		}
-
-		file.write ((const char*) &nameLength, sizeof (nameLength));
-		if (!file) {
-			return false;
-		}
-
-		if (haveOffsetShift) {
-			file.write ("+", 1);
-			if (!file) {
-				return false;
-			}
-		}
-
-		file.write (it.second.c_str (), it.second.length ());
-		if (!file) {
-			return false;
-		}
+	//Write delay imports
+	if (!SaveFunctionTable (mDelayImports, file)) {
+		return false;
 	}
 
 	//Write exports
-	uint64_t exportCount = mExports.size ();
-	file.write ((const char*) &exportCount, sizeof (exportCount));
-	if (!file) {
+	if (!SaveFunctionTable (mExports, file)) {
 		return false;
-	}
-
-	for (auto& it : mExports) {
-		//Write export's virtual address
-		file.write ((const char*) &it.first, sizeof (it.first));
-		if (!file) {
-			return false;
-		}
-
-		//Write export name
-		uint16_t nameLength = (uint16_t) it.second.length ();
-		file.write ((const char*) &nameLength, sizeof (nameLength));
-		if (!file) {
-			return false;
-		}
-
-		file.write (it.second.c_str (), nameLength);
-		if (!file) {
-			return false;
-		}
 	}
 
 	//Write data

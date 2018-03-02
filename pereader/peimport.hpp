@@ -63,3 +63,22 @@ struct PEImportByName {
 
 	static PEImportByName Read (const uint8_t* address);
 };
+
+template<typename T>
+bool IsOrdinalNameTable (T nameTableRVA) {
+	switch (sizeof (T)) {
+	case 8:
+		return (nameTableRVA & 0x8000000000000000ull) != 0; //IMAGE_ORDINAL_FLAG64 in winnt.h
+	case 4:
+		return (nameTableRVA & 0x80000000ul) != 0; //IMAGE_ORDINAL_FLAG32 in winnt.h
+	default:
+		break;
+	}
+
+	return false;
+}
+
+template<typename T>
+uint16_t GetOrdinalFromNameTable (T nameTableRVA) {
+	return (uint16_t) (nameTableRVA & T (0xffff));
+}
