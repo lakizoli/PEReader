@@ -87,6 +87,13 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 		return nullptr;
 	}
 
+	//Collect exports
+	if (!peHeader.EnumerateExports ([binary] (uint32_t ordinal, const std::string& name, uint64_t virtualAddress) -> void {
+		binary->mExports.emplace (virtualAddress, name);
+	})) {
+		return nullptr;
+	}
+
 	return binary;
 }
 
@@ -187,6 +194,49 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 			return nullptr;
 		}
 
+		bool havePosShift = false;
+		std::string name;
+		if (nameLength > 0) {
+			name.resize (nameLength);
+			file.read (&name[0], nameLength);
+			if (!file) {
+				return nullptr;
+			}
+
+			if (name[0] == '+') {
+				havePosShift = true;
+				name = name.substr (1);
+			}
+		}
+
+		if (havePosShift) {
+			pos += iatItemSize; //Ignore null item at module ends in IAT
+		}
+
+		binary->mImports.emplace (pos, name);
+		pos += iatItemSize;
+	}
+
+	//Read exports
+	uint64_t exportCount = 0;
+	file.read ((char*) &exportCount, sizeof (exportCount));
+	if (!file) {
+		return nullptr;
+	}
+
+	for (uint64_t i = 0; i < exportCount; ++i) {
+		uint64_t exportAddress = 0;
+		file.read ((char*) &exportAddress, sizeof (exportAddress));
+		if (!file) {
+			return nullptr;
+		}
+
+		uint16_t nameLength = 0;
+		file.read ((char*) &nameLength, sizeof (nameLength));
+		if (!file) {
+			return nullptr;
+		}
+
 		std::string name;
 		if (nameLength > 0) {
 			name.resize (nameLength);
@@ -196,24 +246,8 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 			}
 		}
 
-		//HACK
-		//TODO: write the offsets to the saved flat binary!
-		size_t posModuleEnd = name.find (']');
-		if (posModuleEnd != std::string::npos) {
-			std::string moduleName = name.substr (0, posModuleEnd + 1);
-			if (moduleName != lastModuleName && binary->mImports.size () > 0) {
-				pos += iatItemSize; //Ignore null item at module ends in IAT
-			}
-			lastModuleName = moduleName;
-		}
-		//END HACK
-
-		binary->mImports.emplace (pos, name);
-		pos += iatItemSize;
+		binary->mExports.emplace (pos, name);
 	}
-
-	//Read exports
-	//TODO: ...
 
 	//Read data
 	uint64_t binaryCount = 0;
@@ -301,7 +335,59 @@ bool FlatBinary::Save (const std::string& path) {
 		return false;
 	}
 
+	std::string lastModuleName;
 	for (auto& it : mImports) {
+		//Write offset shift
+		bool haveOffsetShift = false;
+
+		size_t posModuleNameEnd = it.second.find (']');
+		if (posModuleNameEnd != std::string::npos) {
+			std::string moduleName = it.second.substr (0, posModuleNameEnd + 1);
+			if (!lastModuleName.empty () && moduleName != lastModuleName) {
+				haveOffsetShift = true;
+			}
+			lastModuleName = moduleName;
+		}
+
+		//Write module name with offset shift sign
+		uint16_t nameLength = (uint16_t) it.second.length ();
+		if (haveOffsetShift) {
+			++nameLength;
+		}
+
+		file.write ((const char*) &nameLength, sizeof (nameLength));
+		if (!file) {
+			return false;
+		}
+
+		if (haveOffsetShift) {
+			file.write ("+", 1);
+			if (!file) {
+				return false;
+			}
+		}
+
+		file.write (it.second.c_str (), it.second.length ());
+		if (!file) {
+			return false;
+		}
+	}
+
+	//Write exports
+	uint64_t exportCount = mExports.size ();
+	file.write ((const char*) &exportCount, sizeof (exportCount));
+	if (!file) {
+		return false;
+	}
+
+	for (auto& it : mExports) {
+		//Write export's virtual address
+		file.write ((const char*) &it.first, sizeof (it.first));
+		if (!file) {
+			return false;
+		}
+
+		//Write export name
 		uint16_t nameLength = (uint16_t) it.second.length ();
 		file.write ((const char*) &nameLength, sizeof (nameLength));
 		if (!file) {
@@ -313,9 +399,6 @@ bool FlatBinary::Save (const std::string& path) {
 			return false;
 		}
 	}
-
-	//Write exports
-	//TODO: ...
 
 	//Write data
 	uint64_t binaryCount = mBinary.size ();
