@@ -44,6 +44,40 @@ bool PEHeader::EnumerateImports (ImportCallback callback) const {
 	return true;
 }
 
+bool PEHeader::EnumerateExports (ExportCallback callback) const {
+	const PEDataDirectory& exportDirectory = optionalHeader.dataDirectories[(uint16_t) PEOptionalHeader::DirectoryEntries::IMAGE_DIRECTORY_ENTRY_EXPORT];
+	const PEExportDescriptor* descriptor = sectionTable.GetInstanceOnVirtualAddress<PEExportDescriptor> (exportDirectory.VirtualAddress);
+	if (descriptor) {
+		if (descriptor->NumberOfNames != descriptor->NumberOfFunctions) { //Ensure equality
+			return false;
+		}
+
+		const uint32_t* funcTable = sectionTable.GetInstanceOnVirtualAddress<uint32_t> (descriptor->AddressOfFunctions);
+		if (funcTable == nullptr) {
+			return false;
+		}
+
+		const uint32_t* nameTable = sectionTable.GetInstanceOnVirtualAddress<uint32_t> (descriptor->AddressOfNames);
+		if (nameTable == nullptr) {
+			return false;
+		}
+
+		const uint16_t* ordinalTable = sectionTable.GetInstanceOnVirtualAddress<uint16_t> (descriptor->AddressOfNameOrdinals);
+		if (ordinalTable == nullptr) {
+			return false;
+		}
+
+		for (uint32_t i = 0; i < descriptor->NumberOfFunctions; ++i) {
+			const char* funcName = sectionTable.GetInstanceOnVirtualAddress<char> (nameTable[i]);
+			if (funcName) {
+				callback (descriptor->Base + ordinalTable[i], std::string (funcName), funcTable[i]);
+			}
+		}
+	}
+
+	return true;
+}
+
 std::istream& operator>> (std::istream& stream, PEHeader& header) {
 	//Read DOS header
 	stream >> header.dosHeader;

@@ -5,6 +5,7 @@
 #include "peoptionalheader.hpp"
 #include "pesectiontable.hpp"
 #include "peimport.hpp"
+#include "peexport.hpp"
 
 struct PEHeader {
 	MSDOS20Header dosHeader;
@@ -20,6 +21,9 @@ struct PEHeader {
 
 	typedef std::function<void (bool delayLoaded, const std::string& moduleName, const std::string& importFunction, uint64_t iatAddress)> ImportCallback;
 	bool EnumerateImports (ImportCallback callback) const;
+
+	typedef std::function<void (uint32_t ordinal, const std::string& name, uint64_t virtualAddress)> ExportCallback;
+	bool EnumerateExports (ExportCallback callback) const;
 
 private:
 	template<class T>

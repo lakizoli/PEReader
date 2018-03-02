@@ -39,6 +39,16 @@ std::set<std::string> ASMFunction::GatherUsedAssemblyCommands () const {
 		const std::string& command = it.second;
 		if (command.find ("multibyte nop") == 0) {
 			result.insert ("nop");
+		} else if (command.find ("lock") == 0) {
+			result.insert ("lock");
+
+			size_t posSep = command.find (' ');
+			if (posSep != std::string::npos && command.length() > posSep+1) {
+				size_t posSep2 = command.find (' ', posSep + 1);
+				if (posSep2 != std::string::npos) {
+					result.insert (command.substr (posSep + 1, posSep2 - posSep - 1));
+				}
+			}
 		} else {
 			size_t posSep = command.find (' ');
 			if (posSep != std::string::npos) {
