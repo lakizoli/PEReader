@@ -2,6 +2,30 @@
 #include "analyzer.hpp"
 #include <bochs/disasm/disasm.h>
 
+Analyzer::Operand1Address::Operand1Address () :
+	foundValidAddress (false),
+	isAbsoluteAddress (false),
+	isDynamicCall (false),
+	absoluteValue (0ull)
+{
+}
+
+Analyzer::Operand1Address::Operand1Address (uint64_t absoluteAddress) :
+	foundValidAddress (true),
+	isAbsoluteAddress (true),
+	isDynamicCall (false),
+	absoluteValue (absoluteAddress)
+{
+}
+
+Analyzer::Operand1Address::Operand1Address (bool isDynamicCall, int64_t offsetValue) :
+	foundValidAddress (true),
+	isAbsoluteAddress (false),
+	isDynamicCall (isDynamicCall),
+	offsetValue (offsetValue)
+{
+}
+
 bool Analyzer::IsEndCommand (const std::string& command) const {
 	std::vector<const char*> endCommands {
 		"ret",
@@ -34,23 +58,24 @@ std::tuple<bool, int64_t> Analyzer::ConvertRelativeAddress (const std::string& r
 	return std::make_tuple (false, 0ll);
 }
 
-std::tuple<bool, int64_t> Analyzer::CalculateOperand1Offset (const std::string& command) const {
-	size_t posSeparator = command.find (' ');
-	if (posSeparator == std::string::npos) {
-		return std::make_tuple (false, 0ll);
+Analyzer::Operand1Address Analyzer::CalculateOperand1Address (const std::string& command) const {
+	size_t posFind = command.find (' ');
+	if (posFind == std::string::npos) {
+		return {}; //Invalid result
 	}
 
-	if (command.length () <= posSeparator + 1) {
-		return std::make_tuple (false, 0ll);
+	if (command.length () <= posFind + 1) {
+		return {}; //Invalid result
 	}
 
-	std::string op1 = command.substr (posSeparator + 1);
+	std::string op1 = command.substr (posFind + 1);
+	bool isDynamicCall = false;
 	int64_t callOffset = 0;
 	switch (op1[0]) {
 	case '.': { //Relative address calls
 			auto offsetRes = ConvertRelativeAddress (op1.substr (1));
 			if (!std::get<0> (offsetRes)) {
-				return offsetRes;
+				return {}; //Invalid result
 			}
 
 			callOffset = std::get<1> (offsetRes);
@@ -58,29 +83,38 @@ std::tuple<bool, int64_t> Analyzer::CalculateOperand1Offset (const std::string& 
 		}
 	case 'r': //Register calls
 	case 'e':
-		break; //Ignore this call from detection -> return tuple<true, callOffset == 0>
-	default: {
-			size_t posBracket = op1.find ('['); //qword ptr ds:[rip+2101]
-			if (posBracket != std::string::npos) { //May be rip relative, or non detectable dynamic call
-				posBracket = op1.find ("[rip");
-				if (posBracket != std::string::npos) {
-					auto offsetRes = ConvertRelativeAddress (op1.substr (posBracket + 4));
-					if (!std::get<0> (offsetRes)) {
-						return offsetRes;
-					}
-
-					callOffset = std::get<1> (offsetRes);
+		break; //Ignore this call from detection
+	default:
+		posFind = op1.find ('['); //qword ptr ds:[rip+2101]
+		if (posFind != std::string::npos) { //May be rip relative, or non detectable dynamic call
+			posFind = op1.find ("[rip");
+			if (posFind != std::string::npos) {
+				auto offsetRes = ConvertRelativeAddress (op1.substr (posFind + 4));
+				if (!std::get<0> (offsetRes)) {
+					return {}; //Invalid result
 				}
 
-				break; //Return rip relative offset, or ignore this call from detection -> return tuple<true, callOffset == 0>
+				callOffset = std::get<1> (offsetRes);
 			}
 
-			//Unhandled operator format
-			return std::make_tuple (false, 0ll);
+			break; //Return rip relative offset, or ignore this call from detection
+		} else { //Try another format found in 32 bit disasm output -> dword ptr ds:0x1015c2b8
+			posFind = op1.find (":0x");
+			if (posFind != std::string::npos) {
+				const uint64_t addr = std::stoull (op1.substr (posFind + 3), nullptr, 16);
+				return Operand1Address (addr);
+			}
 		}
+
+		//Unhandled operator format
+		return {}; //Invalid result
 	}
 
-	return std::make_tuple (true, callOffset);
+	if (callOffset == 0) {
+		isDynamicCall = true;
+	}
+
+	return Operand1Address (isDynamicCall, callOffset);
 }
 
 bool Analyzer::IsImportCall (uint64_t targetIP, const std::map<uint64_t, std::string>& imports) {
@@ -133,7 +167,18 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 	bool endFound = false;
 
 	do {
-		uint32_t commandLength = dis.disasm64 (virtualBase, virtualBase, ip, commandBuffer);
+		uint32_t commandLength = 0;
+		switch (mBinary->GetType ()) {
+		case FlatBinary::BinaryTypes::Bit32:
+			commandLength = dis.disasm32 (virtualBase, virtualBase, ip, commandBuffer);
+			break;
+		case FlatBinary::BinaryTypes::Bit64:
+			commandLength = dis.disasm64 (virtualBase, virtualBase, ip, commandBuffer);
+			break;
+		default:
+			return nullptr;
+		}
+		
 
 		//Convert command
 		std::string cmd (commandBuffer);
@@ -149,18 +194,23 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 
 		//Collect subroutines
 		if (cmd.find ("call") == 0) { //Call instruction
-			auto offsetRes = CalculateOperand1Offset (cmd);
-			if (!std::get<0> (offsetRes)) { //Something wrong
+			Operand1Address addressRes = CalculateOperand1Address (cmd);
+			if (!addressRes.foundValidAddress) { //Something wrong
 				return nullptr;
 			}
 
-			int64_t offset = std::get<1> (offsetRes);
-			uint64_t targetIP = uint64_t (int64_t (currentIP + commandLength) + std::get<1> (offsetRes));
-
 			ASMLink::LinkTypes linkType = ASMLink::LinkTypes::Undefined;
-			if (offset == 0) { //Dynamic call
+			uint64_t targetIP = 0;
+
+			if (addressRes.isDynamicCall) { //Dynamic call
 				linkType = ASMLink::LinkTypes::DynamicCall;
 			} else { //Direct call
+				if (addressRes.isAbsoluteAddress) {
+					targetIP = addressRes.absoluteValue;
+				} else {
+					targetIP = uint64_t (int64_t (currentIP + commandLength) + addressRes.offsetValue);
+				}
+
 				linkType = ASMLink::LinkTypes::DirectCall;
 
 				//Detect special calls
@@ -178,18 +228,23 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 			//TODO: handle detection of exit calls (exit, _exit etc.)!
 
 		} else if (cmd[0] == 'j') { //Jump instruction to a long distance
-			auto offsetRes = CalculateOperand1Offset (cmd);
-			if (!std::get<0> (offsetRes)) { //Something wrong
+			Operand1Address addressRes = CalculateOperand1Address (cmd);
+			if (!addressRes.foundValidAddress) { //Something wrong
 				return nullptr;
 			}
 
-			int64_t offset = std::get<1> (offsetRes);
-			uint64_t targetIP = uint64_t (int64_t (currentIP + commandLength) + std::get<1> (offsetRes));
-
 			ASMLink::LinkTypes linkType = ASMLink::LinkTypes::Undefined;
-			if (offset == 0) { //Dynamic jump link
+			uint64_t targetIP = 0;
+
+			if (addressRes.isDynamicCall) { //Dynamic jump link
 				linkType = ASMLink::LinkTypes::DynamicJump;
 			} else if (cmd.find ("jmp") == 0) { //Direct jump link
+				if (addressRes.isAbsoluteAddress) {
+					targetIP = addressRes.absoluteValue;
+				} else {
+					targetIP = uint64_t (int64_t (currentIP + commandLength) + addressRes.offsetValue);
+				}
+
 				linkType = ASMLink::LinkTypes::DirectJump;
 
 				//Detect special jumps
@@ -203,6 +258,12 @@ std::shared_ptr<ASMFunction> Analyzer::WalkFunction (uint64_t address, const std
 					linkType = ASMLink::LinkTypes::DataSegmentJump;
 				}
 			} else { //Conditional jump
+				if (addressRes.isAbsoluteAddress) {
+					targetIP = addressRes.absoluteValue;
+				} else {
+					targetIP = uint64_t (int64_t (currentIP + commandLength) + addressRes.offsetValue);
+				}
+
 				linkType = ASMLink::LinkTypes::ConditionalJump;
 			}
 
