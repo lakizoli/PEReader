@@ -4430,6 +4430,8 @@ public: // for now...
 #endif
   BX_SMF void atexit(void);
 
+  void cpu_loop_direct ();
+
   // now for some ancillary functions...
   BX_SMF void cpu_loop(void);
 #if BX_SUPPORT_SMP

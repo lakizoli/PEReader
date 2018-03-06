@@ -27,6 +27,50 @@
 
 #include "cpustats.h"
 
+extern int fetchDecode32 (const Bit8u *fetchPtr, Bit32u fetchModeMask, bx_bool handle_lock_cr0, bxInstruction_c *i, unsigned remainingInPage);
+#if BX_SUPPORT_X86_64
+extern int fetchDecode64 (const Bit8u *fetchPtr, Bit32u fetchModeMask, bx_bool handle_lock_cr0, bxInstruction_c *i, unsigned remainingInPage);
+#endif
+
+void BX_CPU_C::cpu_loop_direct () {
+	prev_rip = RIP; // commit new EIP
+	speculative_rsp = 0;
+
+	//We allow all processor extension
+	fetchModeMask = BX_FETCH_MODE_IS32_MASK |
+		BX_FETCH_MODE_IS64_MASK |
+		BX_FETCH_MODE_SSE_OK |
+		BX_FETCH_MODE_AVX_OK |
+		BX_FETCH_MODE_OPMASK_OK |
+		BX_FETCH_MODE_EVEX_OK;
+
+	//Execute instructions
+	while (true) {
+		//Get next instruction
+		Bit8u* ptr = mem->get_vector (this, RIP);
+
+		//Decode instruction
+		bxInstruction_c instruction;
+		memset (&instruction, 0, sizeof (instruction));
+
+		int ret = 0;
+#if BX_SUPPORT_X86_64
+		if (cpu_mode == BX_MODE_LONG_64) {
+			ret = fetchDecode64 (ptr, fetchModeMask, true, &instruction, 0xffffffffu);
+		} else
+#endif
+		{
+			ret = fetchDecode32 (ptr, fetchModeMask, true, &instruction, 0xffffffffu);
+		}
+
+		//Execute instruction
+		RIP += instruction.ilen ();
+
+		// when handlers chaining is enabled this single call will execute entire trace
+		BX_CPU_CALL_METHOD (instruction.execute1, (&instruction)); // might iterate repeat instruction
+	}
+}
+
 void BX_CPU_C::cpu_loop(void)
 {
 #if BX_DEBUGGER
