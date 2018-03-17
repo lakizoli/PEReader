@@ -51,8 +51,34 @@ BX_INSF_TYPE BX_CPP_AttrRegparmN(1) BX_CPU_C::LOAD_Ed(bxInstruction_c *i)
 BX_INSF_TYPE BX_CPP_AttrRegparmN(1) BX_CPU_C::LOAD_Eq(bxInstruction_c *i)
 {
   bx_address eaddr = BX_CPU_RESOLVE_ADDR_64(i);
-  TMP64 = read_linear_qword(i->seg(), get_laddr64(i->seg(), eaddr));
-  BX_CPU_CALL_METHOD(i->execute2(), (i));
+  TMP64 = read_linear_qword (i->seg (), get_laddr64 (i->seg (), eaddr));
+
+  //Execute call on the running system
+  ICalledImport* openedImportCall = nullptr;
+  if (i->metaInfo.ia_opcode == BX_IA_CALL_Eq && mHook.ValidHooks () && mHook.importHook->IsImport (eaddr)) {
+	openedImportCall = mHook.importHook->CallImport (eaddr);
+	if (openedImportCall == nullptr) {
+		//TODO: ... throw error ...
+	}
+  } else if (i->metaInfo.ia_opcode == BX_IA_JMP_Eq && mHook.ValidHooks () && mHook.importHook->IsImport (eaddr)) {
+	  openedImportCall = mHook.importHook->JumpImport (eaddr);
+	  if (openedImportCall == nullptr) {
+		  //TODO: ... throw error ...
+	  }
+  }
+
+  //Execute call on processor (or a fake call, when an import is executed)
+  BX_CPU_CALL_METHOD (i->execute2 (), (i));
+
+  //Handle return from running system call
+  if (openedImportCall != nullptr) {
+	if (!mHook.importHook->CloseImportCall (openedImportCall)) {
+		//TODO: ... throw error ...
+	}
+
+	//Execute return on processor
+	RETnear64 (nullptr);
+  }
 }
 #endif
 

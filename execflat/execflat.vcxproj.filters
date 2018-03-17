@@ -5,6 +5,21 @@
     <ClInclude Include="..\pereader\flatbinary.hpp">
       <Filter>flat</Filter>
     </ClInclude>
+    <ClInclude Include="importhandler.hpp">
+      <Filter>importhandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel32imports.hpp">
+      <Filter>importhandlers</Filter>
+    </ClInclude>
+    <ClInclude Include="executor.hpp">
+      <Filter>executor</Filter>
+    </ClInclude>
+    <ClInclude Include="importcpuhook.hpp">
+      <Filter>executor</Filter>
+    </ClInclude>
+    <ClInclude Include="apicrtimports.hpp">
+      <Filter>importhandlers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -12,10 +27,36 @@
     <ClCompile Include="..\pereader\flatbinary.cpp">
       <Filter>flat</Filter>
     </ClCompile>
+    <ClCompile Include="importhandler.cpp">
+      <Filter>importhandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="kernel32imports.cpp">
+      <Filter>importhandlers</Filter>
+    </ClCompile>
+    <ClCompile Include="executor.cpp">
+      <Filter>executor</Filter>
+    </ClCompile>
+    <ClCompile Include="importcpuhook.cpp">
+      <Filter>executor</Filter>
+    </ClCompile>
+    <ClCompile Include="apicrtimports.cpp">
+      <Filter>importhandlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="flat">
       <UniqueIdentifier>{19d05612-8b48-47eb-bbd9-ffe7a3d9b7fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="importhandlers">
+      <UniqueIdentifier>{feef75c7-87fb-4697-ab7d-0720aa82fa71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="executor">
+      <UniqueIdentifier>{8c1ae931-c848-4e3b-b5c3-bfb6b110f4cc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="jumpimport.asm">
+      <Filter>importhandlers</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

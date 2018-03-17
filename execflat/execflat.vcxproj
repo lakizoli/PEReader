@@ -54,6 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -156,10 +157,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\pereader\flatbinary.hpp" />
+    <ClInclude Include="apicrtimports.hpp" />
+    <ClInclude Include="executor.hpp" />
+    <ClInclude Include="importcpuhook.hpp" />
+    <ClInclude Include="importhandler.hpp" />
+    <ClInclude Include="kernel32imports.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\pereader\flatbinary.cpp" />
+    <ClCompile Include="apicrtimports.cpp" />
+    <ClCompile Include="executor.cpp" />
+    <ClCompile Include="importcpuhook.cpp" />
+    <ClCompile Include="importhandler.cpp" />
+    <ClCompile Include="kernel32imports.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -168,7 +179,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="jumpimport.asm" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>

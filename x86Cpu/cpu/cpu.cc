@@ -37,17 +37,28 @@ void BX_CPU_C::cpu_loop_direct () {
 	speculative_rsp = 0;
 
 	//We allow all processor extension
-	fetchModeMask = BX_FETCH_MODE_IS32_MASK |
-		BX_FETCH_MODE_IS64_MASK |
-		BX_FETCH_MODE_SSE_OK |
+	fetchModeMask = BX_FETCH_MODE_SSE_OK |
 		BX_FETCH_MODE_AVX_OK |
 		BX_FETCH_MODE_OPMASK_OK |
 		BX_FETCH_MODE_EVEX_OK;
+
+#if BX_SUPPORT_X86_64
+	if (cpu_mode == BX_MODE_LONG_64) {
+		fetchModeMask |= BX_FETCH_MODE_IS64_MASK;
+	} else
+#endif //BX_SUPPORT_X86_64
+	{
+		fetchModeMask |= BX_FETCH_MODE_IS32_MASK;
+	}
 
 	//Execute instructions
 	while (true) {
 		//Get next instruction
 		Bit8u* ptr = mem->get_vector (this, RIP);
+
+		if (RIP == 0x0000000000401257) {
+			RIP = RIP;
+		}
 
 		//Decode instruction
 		bxInstruction_c instruction;

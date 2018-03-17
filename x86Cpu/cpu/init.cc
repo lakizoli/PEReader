@@ -83,9 +83,9 @@ BX_CPU_C::BX_CPU_C(BX_MEM_C* mem, bx_pc_system_c* sys, unsigned id): mem(mem), s
 
 #undef bx_define_cpudb
 
-static bx_cpuid_t *cpuid_factory(BX_CPU_C *cpu)
+static bx_cpuid_t *cpuid_factory(BX_CPU_C *cpu, unsigned cpu_model)
 {
-	unsigned cpu_model = 0; // SIM->get_param_enum (BXPN_CPU_MODEL)->get ();
+	//unsigned cpu_model = SIM->get_param_enum (BXPN_CPU_MODEL)->get ();
 
 #define bx_define_cpudb(model) \
   case bx_cpudb_##model:       \
@@ -102,10 +102,10 @@ static bx_cpuid_t *cpuid_factory(BX_CPU_C *cpu)
 #endif
 
 // BX_CPU_C constructor
-void BX_CPU_C::initialize(void)
+void BX_CPU_C::initialize(unsigned cpu_model)
 {
 #if BX_CPU_LEVEL >= 4
-  BX_CPU_THIS_PTR cpuid = cpuid_factory (this);
+  BX_CPU_THIS_PTR cpuid = cpuid_factory (this, cpu_model);
   if (! BX_CPU_THIS_PTR cpuid)
     BX_PANIC(("Failed to create CPUID module !"));
 

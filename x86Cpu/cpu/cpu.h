@@ -1513,7 +1513,7 @@ public: // for now...
   BX_CPU_C(BX_MEM_C* mem, bx_pc_system_c* sys, unsigned id = 0);
  ~BX_CPU_C();
 
-  void initialize(void);
+  void initialize(unsigned cpu_model);
   void init_statistics(void);
 
 #ifdef CPU_HAS_PARAM_STATE_HOOK
@@ -4430,7 +4430,30 @@ public: // for now...
 #endif
   BX_SMF void atexit(void);
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  //Start of ZCorp extensions
+  struct ICalledImport {
+  };
+
+  struct IImportHook {
+	virtual bool IsImport (Bit64u address) const = 0;
+	virtual ICalledImport* CallImport (Bit64u address) = 0;
+	virtual ICalledImport* JumpImport (Bit64u address) = 0;
+	virtual bool CloseImportCall (ICalledImport* calledImport) = 0;
+  };
+
+  struct Hooks {
+	  IImportHook* importHook;
+
+	  Hooks () : importHook (nullptr) {}
+	  bool ValidHooks () const { return importHook != nullptr; }
+  } mHook;
+
+  void SetImportHook (IImportHook* hook) { mHook.importHook = hook; }
+
   void cpu_loop_direct ();
+  //END of ZCorp extensions
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // now for some ancillary functions...
   BX_SMF void cpu_loop(void);
