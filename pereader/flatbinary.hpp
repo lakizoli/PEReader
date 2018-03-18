@@ -12,6 +12,14 @@ public:
 		Bit64,
 	};
 
+	enum class RelocationTypes : uint32_t {
+		Unknown,
+		UInt16High,
+		UInt16Low,
+		UInt32,
+		UInt64
+	};
+
 private:
 	uint32_t mVersion; ///< The format version of the flat binary.
 	BinaryTypes mType; ///< The type of the executable.
@@ -21,9 +29,11 @@ private:
 	uint64_t mHeapSize; ///< The size of the heap have to be allocated.
 	uint64_t mCodeSize; ///< The size of the flat code segment.
 	uint64_t mEntryPoint; ///< The entry point of the executable.
+	uint64_t mRelocationBase; ///< The base address of relocation addresses. (The original virtual image base address of the executable.)
 	std::map<uint64_t, std::string> mImports; ///< The imports stored in order of the address table. (format: "[module]function". Ordinal references have the format: "ordinal:{index}".)
 	std::map<uint64_t, std::string> mDelayImports; ///< The imports stored in order of the address table. (format: "[module]function". Ordinal references have the format: "ordinal:{index}".)
 	std::map<uint64_t, std::string> mExports; ///< The exports of the module.
+	std::map<RelocationTypes, std::set<uint64_t>> mRelocations; ///< The list of relocation's virtual adresses assigned to their relocation type used to proper shift offset calculation.
 	std::vector<uint8_t> mBinary; ///< The flat binary.
 
 	FlatBinary ();
@@ -69,6 +79,10 @@ public:
 
 	uint64_t GetEntryPoint () const {
 		return mEntryPoint;
+	}
+
+	uint64_t GetRelocationBase () const {
+		return mRelocationBase;
 	}
 
 	const std::map<uint64_t, std::string>& GetImports () const {

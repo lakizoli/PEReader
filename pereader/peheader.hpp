@@ -6,6 +6,7 @@
 #include "pesectiontable.hpp"
 #include "peimport.hpp"
 #include "peexport.hpp"
+#include "perelocation.hpp"
 
 struct PEHeader {
 	MSDOS20Header dosHeader;
@@ -24,6 +25,9 @@ struct PEHeader {
 
 	typedef std::function<void (uint32_t ordinal, const std::string& name, uint64_t virtualAddress)> ExportCallback;
 	bool EnumerateExports (ExportCallback callback) const;
+
+	typedef std::function<void (bool isHighPart, uint16_t wide, uint64_t virtualAddress)> RelocationCallback;
+	bool EnumerateRelocations (RelocationCallback callback) const;
 
 private:
 	template<class T>

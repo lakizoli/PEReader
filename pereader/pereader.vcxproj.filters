@@ -36,6 +36,9 @@
     <ClInclude Include="peexport.hpp">
       <Filter>pe</Filter>
     </ClInclude>
+    <ClInclude Include="perelocation.hpp">
+      <Filter>pe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -72,6 +75,9 @@
       <Filter>flat</Filter>
     </ClCompile>
     <ClCompile Include="peexport.cpp">
+      <Filter>pe</Filter>
+    </ClCompile>
+    <ClCompile Include="perelocation.cpp">
       <Filter>pe</Filter>
     </ClCompile>
   </ItemGroup>

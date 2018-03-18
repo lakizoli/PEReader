@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="flatbinary.hpp" />
     <ClInclude Include="peexport.hpp" />
+    <ClInclude Include="perelocation.hpp" />
     <ClInclude Include="utils.hpp" />
     <ClInclude Include="dosheader.hpp" />
     <ClInclude Include="pe.hpp" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="flatbinary.cpp" />
     <ClCompile Include="peexport.cpp" />
+    <ClCompile Include="perelocation.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="dosheader.cpp" />
     <ClCompile Include="main.cpp" />

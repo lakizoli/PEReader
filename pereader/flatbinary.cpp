@@ -13,7 +13,8 @@ FlatBinary::FlatBinary () :
 	mStackSize (0),
 	mHeapSize (0),
 	mCodeSize (0),
-	mEntryPoint (0)
+	mEntryPoint (0),
+	mRelocationBase (0)
 {
 }
 
@@ -101,6 +102,7 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 		binary->mHeapSize = header->SizeOfHeapReserve;
 		binary->mCodeSize = header->SizeOfCode;
 		binary->mEntryPoint = header->AddressOfEntryPoint;
+		binary->mRelocationBase = header->ImageBase;
 
 		break;
 	}
@@ -114,6 +116,7 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 		binary->mHeapSize = header->SizeOfHeapReserve;
 		binary->mCodeSize = header->SizeOfCode;
 		binary->mEntryPoint = header->AddressOfEntryPoint;
+		binary->mRelocationBase = header->ImageBase;
 
 		break;
 	}
@@ -159,6 +162,35 @@ std::shared_ptr<FlatBinary> FlatBinary::Create (const PE& pe) {
 	//Collect exports
 	if (!peHeader.EnumerateExports ([binary] (uint32_t ordinal, const std::string& name, uint64_t virtualAddress) -> void {
 		binary->mExports.emplace (virtualAddress, name);
+	})) {
+		return nullptr;
+	}
+
+	//Collect relocations
+	if (!peHeader.EnumerateRelocations ([binary] (bool isHighPart, uint16_t wide, uint64_t virtualAddress) -> void {
+		RelocationTypes type = RelocationTypes::Unknown;
+		switch (wide) {
+		case 2:
+			type = isHighPart ? RelocationTypes::UInt16High : RelocationTypes::UInt16Low;
+			break;
+		case 4:
+			type = RelocationTypes::UInt32;
+			break;
+		case 8:
+			type = RelocationTypes::UInt64;
+			break;
+		default:
+			break;
+		}
+
+		if (type != RelocationTypes::Unknown) {
+			auto it = binary->mRelocations.find (type);
+			if (it == binary->mRelocations.end ()) {
+				binary->mRelocations.emplace (type, std::set<uint64_t> { virtualAddress });
+			} else {
+				it->second.insert (virtualAddress);
+			}
+		}
 	})) {
 		return nullptr;
 	}
@@ -235,6 +267,11 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 		return nullptr;
 	}
 
+	file.read ((char*) &binary->mRelocationBase, sizeof (mRelocationBase));
+	if (!file) {
+		return nullptr;
+	}
+
 	//Read imports
 	if (!LoadFunctionTable (file, binary->mImports)) {
 		return nullptr;
@@ -248,6 +285,42 @@ std::shared_ptr<FlatBinary> FlatBinary::Load (const std::string& path) {
 	//Read exports
 	if (!LoadFunctionTable (file, binary->mExports)) {
 		return nullptr;
+	}
+
+	//Read relocations
+	uint64_t relocationTypeCount = 0;
+	file.read ((char*) &relocationTypeCount, sizeof (relocationTypeCount));
+	if (!file) {
+		return nullptr;
+	}
+
+	for (uint64_t i = 0; i < relocationTypeCount; ++i) {
+		uint32_t relocationType = 0;
+		file.read ((char*) &relocationType, sizeof (relocationType));
+		if (!file) {
+			return nullptr;
+		}
+
+		uint64_t relocationCount = 0;
+		file.read ((char*) &relocationCount, sizeof (relocationCount));
+		if (!file) {
+			return nullptr;
+		}
+
+		for (uint64_t j = 0; j < relocationCount; ++j) {
+			uint64_t virtualAddress = 0;
+			file.read ((char*) &virtualAddress, sizeof (virtualAddress));
+			if (!file) {
+				return nullptr;
+			}
+
+			auto it = binary->mRelocations.find ((RelocationTypes) relocationType);
+			if (it == binary->mRelocations.end ()) {
+				binary->mRelocations.emplace ((RelocationTypes) relocationType, std::set<uint64_t> { virtualAddress });
+			} else {
+				it->second.insert (virtualAddress);
+			}
+		}
 	}
 
 	//Read data
@@ -329,6 +402,11 @@ bool FlatBinary::Save (const std::string& path) {
 		return false;
 	}
 
+	file.write ((const char*) &mRelocationBase, sizeof (mRelocationBase));
+	if (!file) {
+		return false;
+	}
+
 	//Write imports
 	if (!SaveFunctionTable (mImports, file)) {
 		return false;
@@ -342,6 +420,34 @@ bool FlatBinary::Save (const std::string& path) {
 	//Write exports
 	if (!SaveFunctionTable (mExports, file)) {
 		return false;
+	}
+
+	//Write relocations
+	uint64_t relocationTypeCount = mRelocations.size ();
+	file.write ((const char*) &relocationTypeCount, sizeof (relocationTypeCount));
+	if (!file) {
+		return false;
+	}
+
+	for (auto& it : mRelocations) {
+		uint32_t relocationType = (uint32_t) it.first;
+		file.write ((const char*) &relocationType, sizeof (relocationType));
+		if (!file) {
+			return false;
+		}
+
+		uint64_t relocationCount = it.second.size ();
+		file.write ((const char*) &relocationCount, sizeof (relocationCount));
+		if (!file) {
+			return false;
+		}
+
+		for (uint64_t virtualAddress : it.second) {
+			file.write ((const char*) &virtualAddress, sizeof (virtualAddress));
+			if (!file) {
+				return false;
+			}
+		}
 	}
 
 	//Write data

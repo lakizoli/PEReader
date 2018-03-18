@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "peheader.hpp"
+#include "perelocation.hpp"
 
 PEHeader::PEHeader () {
 }
@@ -73,6 +74,58 @@ bool PEHeader::EnumerateExports (ExportCallback callback) const {
 				callback (descriptor->Base + ordinalTable[i], std::string (funcName), funcTable[i]);
 			}
 		}
+	}
+
+	return true;
+}
+
+bool PEHeader::EnumerateRelocations (RelocationCallback callback) const {
+	const PEDataDirectory& baseRelocationDirectory = optionalHeader.dataDirectories[(uint16_t) PEOptionalHeader::DirectoryEntries::IMAGE_DIRECTORY_ENTRY_BASERELOC];
+	const PEBaseRelocation* baseRelocation = sectionTable.GetInstanceOnVirtualAddress<PEBaseRelocation> (baseRelocationDirectory.VirtualAddress);
+	while (baseRelocation && baseRelocation->SizeOfBlock > 0) {
+		uint32_t countOfRelocations = (baseRelocation->SizeOfBlock - sizeof (PEBaseRelocation)) / sizeof (uint16_t);
+		PEBaseRelocationValue* relocValues = (PEBaseRelocationValue*) (((const uint8_t*) baseRelocation) + sizeof (PEBaseRelocation));
+		for (uint32_t i = 0; i < countOfRelocations; ++i) {
+			PEBaseRelocationValue relocValue = relocValues[i];
+
+			switch ((PERelocationType) relocValue.type) {
+			case PERelocationType::IMAGE_REL_BASED_HIGH:
+				callback (true, 2, baseRelocation->VirtualAddress + relocValue.offset);
+				break;
+			case PERelocationType::IMAGE_REL_BASED_LOW:
+				callback (false, 2, baseRelocation->VirtualAddress + relocValue.offset);
+				break;
+			case PERelocationType::IMAGE_REL_BASED_HIGHLOW:
+				callback (false, 4, baseRelocation->VirtualAddress + relocValue.offset);
+				break;
+			case PERelocationType::IMAGE_REL_BASED_DIR64:
+				callback (false, 8, baseRelocation->VirtualAddress + relocValue.offset);
+				break;
+			default:
+				break;
+			}
+
+			//https://github.com/abhisek/Pe-Loader-Sample/blob/master/src/PeLdr.cpp
+
+			/*
+			case IMAGE_REL_BASED_DIR64:
+			*((UINT_PTR*)(x + pReloc->offset)) += iRelocOffset;
+			break;
+			case IMAGE_REL_BASED_HIGHLOW:
+			*((DWORD*)(x + pReloc->offset)) += (DWORD) iRelocOffset;
+			break;
+
+			case IMAGE_REL_BASED_HIGH:
+			*((WORD*)(x + pReloc->offset)) += HIWORD(iRelocOffset);
+			break;
+
+			case IMAGE_REL_BASED_LOW:
+			*((WORD*)(x + pReloc->offset)) += LOWORD(iRelocOffset);
+			break;
+			*/
+		}
+
+		baseRelocation = (const PEBaseRelocation*) ((uint8_t*) baseRelocation + baseRelocation->SizeOfBlock);
 	}
 
 	return true;
