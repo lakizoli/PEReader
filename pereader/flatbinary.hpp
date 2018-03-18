@@ -97,6 +97,10 @@ public:
 		return mExports;
 	}
 
+	const std::map<RelocationTypes, std::set<uint64_t>>& GetRelocations () const {
+		return mRelocations;
+	}
+
 	const std::vector<uint8_t>& GetBinary () const {
 		return mBinary;
 	}

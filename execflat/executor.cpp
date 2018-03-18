@@ -49,6 +49,39 @@ bool Executor::RunBinary (std::shared_ptr<FlatBinary> binary) {
 	}
 
 	////////////////////////////////////////////////////////////
+	//Shift program's relocations
+	const std::map<FlatBinary::RelocationTypes, std::set<uint64_t>>& relocations = binary->GetRelocations ();
+	uint64_t relocationBase = binary->GetRelocationBase ();
+	int64_t delta = loadBase - relocationBase;
+
+	for (auto& it : relocations) {
+		for (uint64_t virtualAddress : it.second) {
+			uint8_t* ptr = mem->get_vector (cpu.get (), loadBase + virtualAddress);
+
+			switch (it.first) {
+			case FlatBinary::RelocationTypes::UInt16Low: {
+				*(int16_t*) ptr += (int16_t) delta;
+				break;
+			}
+			case FlatBinary::RelocationTypes::UInt16High: {
+				*(int16_t*) ptr += (int16_t) (delta >> 16);
+				break;
+			}
+			case FlatBinary::RelocationTypes::UInt32: {
+				*(int32_t*) ptr += (int32_t) delta;
+				break;
+			}
+			case FlatBinary::RelocationTypes::UInt64: {
+				*(int64_t*) ptr += delta;
+				break;
+			}
+			default:
+				break;
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////
 	//Init cpu descriptors
 	// EIP deltas
 	cpu->prev_rip = cpu->gen_reg[BX_32BIT_REG_EIP].dword.erx = 0x100000;

@@ -104,25 +104,6 @@ bool PEHeader::EnumerateRelocations (RelocationCallback callback) const {
 			default:
 				break;
 			}
-
-			//https://github.com/abhisek/Pe-Loader-Sample/blob/master/src/PeLdr.cpp
-
-			/*
-			case IMAGE_REL_BASED_DIR64:
-			*((UINT_PTR*)(x + pReloc->offset)) += iRelocOffset;
-			break;
-			case IMAGE_REL_BASED_HIGHLOW:
-			*((DWORD*)(x + pReloc->offset)) += (DWORD) iRelocOffset;
-			break;
-
-			case IMAGE_REL_BASED_HIGH:
-			*((WORD*)(x + pReloc->offset)) += HIWORD(iRelocOffset);
-			break;
-
-			case IMAGE_REL_BASED_LOW:
-			*((WORD*)(x + pReloc->offset)) += LOWORD(iRelocOffset);
-			break;
-			*/
 		}
 
 		baseRelocation = (const PEBaseRelocation*) ((uint8_t*) baseRelocation + baseRelocation->SizeOfBlock);
