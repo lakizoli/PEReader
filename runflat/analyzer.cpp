@@ -412,6 +412,10 @@ void Analyzer::SaveAssemblyFiles () const {
 
 					sourceFile << std::setw (50) << std::left << std::setfill (' ') << itAsm.second;
 
+					if (itAsm.first == mBinary->GetEntryPoint ()) {
+						sourceFile << "; Start of executable";
+					}
+
 					const std::map<uint64_t, std::shared_ptr<ASMLink>>& links = func->GetLinksBySourceAddress ();
 					auto itLink = links.find (itAsm.first);
 					if (itLink != links.end ()) {
