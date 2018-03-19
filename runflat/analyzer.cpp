@@ -365,7 +365,6 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 	mBinary = binary;
 
 	//TODO: walk, and alter all relocation originated to the entry point of the binary...
-	//TODO: analyzer have to handle already walked function ranges...
 
 	//Walk functions on all code path
 	std::set<uint64_t> functionAddresses;
@@ -415,7 +414,19 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 					case ASMLink::LinkTypes::DirectJump:
 					case ASMLink::LinkTypes::ConditionalJump:
 						if (!func->IsAddressInRange (targetAddress) && mFunctions.find (targetAddress) == mFunctions.end ()) { //Jump out from function
-							functionAddresses.insert (targetAddress);
+							//Check function already walked as part of other functions
+							bool foundAsEmbedded = false;
+							for (auto& it : mFunctions) {
+								if (it.second->IsAddressInRange (targetAddress)) {
+									foundAsEmbedded = true;
+									break;
+								}
+							}
+
+							//Add function to walk list
+							if (!foundAsEmbedded) {
+								functionAddresses.insert (targetAddress);
+							}
 						}
 						break;
 					default:
@@ -424,6 +435,21 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 				}
 			}
 		}
+	}
+
+	//Remove functions whole embedded in other functions
+	std::vector<uint64_t> removeAddresses;
+	for (auto& it : mFunctions) {
+		for (auto& itCheck : mFunctions) {
+			if (it != itCheck && itCheck.second->IsAddressInRange (it.first)) {
+				removeAddresses.push_back (it.first);
+				break;
+			}
+		}
+	}
+
+	for (uint64_t removeFuncAddress : removeAddresses) {
+		mFunctions.erase (removeFuncAddress);
 	}
 }
 

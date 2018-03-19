@@ -1,0 +1,8 @@
+x64\Release\pereader genbin "c:\work\git_repos\PEReader\x64\Release\testhw.exe" "c:\work\git_repos\PEReader\x64\Release\testhw.exe.flat"
+x64\Release\pereader genbin "c:\dev\DevMain\MakeAdds\Tools\Win\VS_14\amd64\c1.dll" "c:\work\git_repos\PEReader\x64\Release\c1_64bit.dll.flat"
+x64\Release\pereader genbin "c:\dev\DevMain\MakeAdds\Tools\Win\VS_14\amd64\c1xx.dll" "c:\work\git_repos\PEReader\x64\Release\c1xx_64bit.dll.flat"
+x64\Release\pereader genbin "c:\dev\DevMain\MakeAdds\Tools\Win\VS_14\amd64\c2.dll" "c:\work\git_repos\PEReader\x64\Release\c2_64bit.dll.flat"
+x64\Release\pereader genbin "c:\dev\DevMain\MakeAdds\Tools\Win\VS_14\c1.dll" "c:\work\git_repos\PEReader\x64\Release\c1_32bit.dll.flat"
+x64\Release\pereader genbin "c:\dev\DevMain\MakeAdds\Tools\Win\VS_14\c1xx.dll" "c:\work\git_repos\PEReader\x64\Release\c1xx_32bit.dll.flat"
+x64\Release\pereader genbin "c:\dev\DevMain\MakeAdds\Tools\Win\VS_14\c2.dll" "c:\work\git_repos\PEReader\x64\Release\c2_32bit.dll.flat"
+x64\Release\pereader genbin "c:\Program Files\Common Files\microsoft shared\ClickToRun\ucrtbase.dll" "c:\work\git_repos\PEReader\x64\Release\ucrtbase.dll.flat"
