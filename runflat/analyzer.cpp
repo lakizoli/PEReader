@@ -284,19 +284,99 @@ Analyzer::Analyzer (const std::string& flatPath, const std::string& destPath) :
 	mFlatPath (flatPath),
 	mDestPath (destPath)
 {
+	//Fake disasm
+	/*uint8_t src[] = { 0x48, 0x89, 0x54, 0x24, 0x10,
+	0x48, 0x89, 0x4C, 0x24, 0x08,
+	0x48, 0x83, 0xEC, 0x48,
+	0x48, 0x8B, 0x44, 0x24, 0x50,
+	0x48, 0x89, 0x44, 0x24, 0x28,
+	0xEB, 0x0E,
+	0x48, 0x8B, 0x44, 0x24, 0x28,
+	0x48, 0x83, 0xC0, 0x08,
+	0x48, 0x89, 0x44, 0x24, 0x28,
+	0x48, 0x8B, 0x44, 0x24, 0x58,
+	0x48, 0x39, 0x44, 0x24, 0x28,
+	0x74, 0x38,
+	0x48, 0x8B, 0x44, 0x24, 0x28,
+	0x48, 0x83, 0x38, 0x00,
+	0x75, 0x02,
+	0xEB, 0xD9,
+	0x48, 0x8B, 0x44, 0x24, 0x28,
+	0x48, 0x8B, 0x00,
+	0x48, 0x89, 0x44, 0x24, 0x30,
+	0x48, 0x8B, 0x44, 0x24, 0x30,
+	0xFF, 0x15, 0x4F, 0x10, 0x0E, 0x00,
+	0x89, 0x44, 0x24, 0x20,
+	0x83, 0x7C, 0x24, 0x20, 0x00,
+	0x74, 0x06,
+	0x8B, 0x44, 0x24, 0x20,
+	0xEB, 0x04,
+	0xEB, 0xAE,
+	0x33, 0xC0,
+	0x48, 0x83, 0xC4, 0x48,
+	0xC3 };
+
+	disassembler dis;
+	char commandBuffer[1024];
+	const uint8_t* ip = src;
+	while (true) {
+		uint32_t commandLength = dis.disasm64 (0x1000, 0x1000, ip, commandBuffer);
+		ip += commandLength;
+	}
+*/
+	//End fake disasm
+	/*
+	_initterm_e asm function bytes: 
+	48 89 54 24 10       mov         qword ptr [rsp+10h],rdx
+	48 89 4C 24 08       mov         qword ptr [rsp+8],rcx
+	48 83 EC 48          sub         rsp,48h
+	48 8B 44 24 50       mov         rax,qword ptr [rsp+50h]
+	48 89 44 24 28       mov         qword ptr [rsp+28h],rax
+	EB 0E                jmp         00007FF907F104B8
+	48 8B 44 24 28       mov         rax,qword ptr [rsp+28h]
+	48 83 C0 08          add         rax,8
+	48 89 44 24 28       mov         qword ptr [rsp+28h],rax
+	48 8B 44 24 58       mov         rax,qword ptr [rsp+58h]
+	48 39 44 24 28       cmp         qword ptr [rsp+28h],rax
+	74 38                je          00007FF907F104FC
+	48 8B 44 24 28       mov         rax,qword ptr [rsp+28h]
+	48 83 38 00          cmp         qword ptr [rax],0
+	75 02                jne         00007FF907F104D1
+	EB D9                jmp         00007FF907F104AA
+	48 8B 44 24 28       mov         rax,qword ptr [rsp+28h]
+	48 8B 00             mov         rax,qword ptr [rax]
+	48 89 44 24 30       mov         qword ptr [rsp+30h],rax
+	48 8B 44 24 30       mov         rax,qword ptr [rsp+30h]
+	FF 15 4F 10 0E 00    call        qword ptr [7FF907FF1538h]
+	89 44 24 20          mov         dword ptr [rsp+20h],eax
+	83 7C 24 20 00       cmp         dword ptr [rsp+20h],0
+	74 06                je          00007FF907F104FA
+	8B 44 24 20          mov         eax,dword ptr [rsp+20h]
+	EB 04                jmp         00007FF907F104FE
+	EB AE                jmp         00007FF907F104AA
+	33 C0                xor         eax,eax
+	48 83 C4 48          add         rsp,48h
+	C3                   ret
+	*/
 }
 
 void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 	//Store actual binary
 	mBinary = binary;
 
+	//TODO: walk, and alter all relocation originated to the entry point of the binary...
+	//TODO: analyzer have to handle already walked function ranges...
+
 	//Walk functions on all code path
 	std::set<uint64_t> functionAddresses;
 	std::map<uint64_t, std::string> functionNames;
 
 	//Add entry point of the executable
-	functionAddresses.insert (mBinary->GetEntryPoint ());
-	functionNames.emplace (mBinary->GetEntryPoint (), "StartExecutable");
+	uint64_t entryPoint = mBinary->GetEntryPoint ();
+	if (entryPoint >= mBinary->GetVirtualBase ()) { //If we have a valid entry point (dll's may have no entry point)
+		functionAddresses.insert (mBinary->GetEntryPoint ());
+		functionNames.emplace (mBinary->GetEntryPoint (), "StartExecutable");
+	}
 
 	//Add all exported functions
 	const std::map<uint64_t, std::string>& exports = mBinary->GetExports ();
@@ -348,6 +428,8 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 }
 
 void Analyzer::SaveAssemblyFiles () const {
+	//TODO: handle byte dumps also in to the files...
+
 	for (const auto itFunc : mFunctions) {
 		std::shared_ptr<ASMFunction> func = itFunc.second;
 		if (func) {

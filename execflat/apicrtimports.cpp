@@ -31,28 +31,32 @@ extern "C" int _initterm_e (void*, void*);
 extern "C" void asm_jump_to_initterm_e (void*, void*, void*);
 
 void ApiCrt_InitTermE::ReadParameters (BX_CPU_C& cpu) {
+	//TODO: handle generating function into the processor space...
+
+	mImportFunctionAddress = (uint64_t) &_initterm_e;
+
 	uint64_t vaStart = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
 	//mFirstParam = GetAddressOfVirtualAddress (cpu, virtualAddress);
 
 	uint64_t vaEnd = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 1);
 	//mSecondParam = GetAddressOfVirtualAddress (cpu, virtualAddress);
 
-	uint64_t vaItem = vaStart;
-	while (vaItem < vaEnd) {
-		uint64_t vaCall = 0;
-		if (!CopyFromVirtualMemory (cpu, vaItem, sizeof (uint64_t), vaCall)) {
-			break;
-		}
+	//uint64_t vaItem = vaStart;
+	//while (vaItem < vaEnd) {
+	//	uint64_t vaCall = 0;
+	//	if (!CopyFromVirtualMemory (cpu, vaItem, sizeof (uint64_t), vaCall)) {
+	//		break;
+	//	}
 
-		vaItem += sizeof (uint64_t);
-	}
+	//	vaItem += sizeof (uint64_t);
+	//}
 }
 
 void ApiCrt_InitTermE::Call () {
-	asm_jump_to_initterm_e (&_initterm_e, (void*) mFirstParam, (void*) mSecondParam);
+	//asm_jump_to_initterm_e (&_initterm_e, (void*) mFirstParam, (void*) mSecondParam);
 	mResultCode = _initterm_e ((void*) mFirstParam, (void*) mSecondParam);
 }
 
 bool ApiCrt_InitTermE::WriteResults (BX_CPU_C& cpu) {
-	return WriteValueToGPRegister (cpu, mResultCode, BX_64BIT_REG_RAX);
+	return WriteValueToGPRegister (cpu, mImportFunctionAddress, BX_64BIT_REG_RIP);
 }

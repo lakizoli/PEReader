@@ -34,6 +34,8 @@ ASMFunction::ASMFunction (uint64_t virtualAddress, uint64_t length, const std::v
 std::set<std::string> ASMFunction::GatherUsedAssemblyCommands () const {
 	std::set<std::string> result;
 
+	//TODO: handle REP command...
+
 	for (const auto it : mAsmSource) {
 		const std::string& command = it.second;
 		if (command.find ("multibyte nop") == 0) {

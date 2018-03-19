@@ -61,10 +61,10 @@ BX_INSF_TYPE BX_CPP_AttrRegparmN(1) BX_CPU_C::LOAD_Eq(bxInstruction_c *i)
 		//TODO: ... throw error ...
 	}
   } else if (i->metaInfo.ia_opcode == BX_IA_JMP_Eq && mHook.ValidHooks () && mHook.importHook->IsImport (eaddr)) {
-	  openedImportCall = mHook.importHook->JumpImport (eaddr);
-	  if (openedImportCall == nullptr) {
-		  //TODO: ... throw error ...
-	  }
+	openedImportCall = mHook.importHook->JumpImport (eaddr);
+	if (openedImportCall == nullptr) {
+		//TODO: ... throw error ...
+	}
   }
 
   //Execute call on processor (or a fake call, when an import is executed)

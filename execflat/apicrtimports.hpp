@@ -20,6 +20,7 @@ public:
 class ApiCrt_InitTermE : public ImportHandler {
 	DECLARE_IMPORT_HANDLER (ApiCrt_InitTermE);
 
+	uint64_t mImportFunctionAddress;
 	uint8_t* mFirstParam;
 	uint8_t* mSecondParam;
 	uint32_t mResultCode;
