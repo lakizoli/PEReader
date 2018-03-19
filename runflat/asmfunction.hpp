@@ -8,10 +8,12 @@ class ASMFunction {
 	std::map<uint64_t, std::shared_ptr<ASMLink>> mLinksBySourceAddress; ///< Links originated from this function assigned to source address
 	std::map<uint64_t, std::vector<std::shared_ptr<ASMLink>>> mLinksByTargetAddress; ///< Links originated from this function assigned to target address
 	std::map<uint64_t, std::string> mAsmSource; ///< The ASM source code of this function assigned to the ip value.
+	std::map<uint64_t, std::vector<uint8_t>> mAsmBytes; ///< The ASM byte code of this function assigned to the ip value.
 
 public:
 	ASMFunction (uint64_t virtualAddress, uint64_t length, const std::vector<std::shared_ptr<ASMLink>>& links,
-		const std::map<uint64_t, std::string>& asmSource, const std::string& optionalName = std::string ());
+		const std::map<uint64_t, std::string>& asmSource, const std::map<uint64_t, std::vector<uint8_t>>& asmBytes,
+		const std::string& optionalName = std::string ());
 
 	~ASMFunction () {}
 
@@ -20,6 +22,7 @@ public:
 	}
 
 	std::set<std::string> GatherUsedAssemblyCommands () const;
+	uint32_t GetMaxAsmByteWidth () const;
 
 public:
 	void SetName (const std::string& name) {
@@ -48,5 +51,9 @@ public:
 
 	const std::map<uint64_t, std::string>& GetAsmSource () const {
 		return mAsmSource;
+	}
+
+	const std::map<uint64_t, std::vector<uint8_t>>& GetAsmBytes () const {
+		return mAsmBytes;
 	}
 };
