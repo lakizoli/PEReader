@@ -51,7 +51,7 @@ protected:
 	static uint8_t* GetAddressOfVirtualAddress (BX_CPU_C& cpu, uint64_t virtualAddress);
 
 public:
-	virtual void ReadParameters (BX_CPU_C& cpu) = 0;
+	virtual void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) = 0;
 	virtual void Call () = 0;
 	virtual bool WriteResults (BX_CPU_C& cpu) = 0;
 };

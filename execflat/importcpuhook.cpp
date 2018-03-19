@@ -23,15 +23,16 @@ BX_CPU_C::ICalledImport* ImportCpuHook::RunImport (bool isCall, Bit64u address) 
 		return nullptr;
 	}
 
-	importHandler->ReadParameters (mCpu);
+	importHandler->ReadParameters (mCpu, mInjectBase);
 	importHandler->Call ();
 
 	return new CalledImport (importHandler);
 }
 
-ImportCpuHook::ImportCpuHook (BX_CPU_C& cpu, uint64_t loadBase, std::shared_ptr<FlatBinary> binary) :
+ImportCpuHook::ImportCpuHook (BX_CPU_C& cpu, uint64_t loadBase, uint64_t injectBase, std::shared_ptr<FlatBinary> binary) :
 	mCpu (cpu),
 	mLoadBase (loadBase),
+	mInjectBase (injectBase),
 	mBinary (binary) {
 }
 

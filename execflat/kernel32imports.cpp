@@ -8,7 +8,7 @@ IMPLEMENT_IMPORT_HANDLER (Kernel32_QueryPerformanceCounter, "[KERNEL32.dll]Query
 
 
 
-void Kernel32_GetSystemTimeAsFileTime::ReadParameters (BX_CPU_C& cpu) {
+void Kernel32_GetSystemTimeAsFileTime::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
 	mResultVirtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
 }
 
@@ -22,7 +22,7 @@ bool Kernel32_GetSystemTimeAsFileTime::WriteResults (BX_CPU_C& cpu) {
 
 
 
-void Kernel32_GetCurrentThreadId::ReadParameters (BX_CPU_C& cpu) {
+void Kernel32_GetCurrentThreadId::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
 	//No parameters needed
 }
 
@@ -36,7 +36,7 @@ bool Kernel32_GetCurrentThreadId::WriteResults (BX_CPU_C& cpu) {
 
 
 
-void Kernel32_GetCurrentProcessId::ReadParameters (BX_CPU_C& cpu) {
+void Kernel32_GetCurrentProcessId::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
 	//No parameters needed
 }
 
@@ -50,7 +50,7 @@ bool Kernel32_GetCurrentProcessId::WriteResults (BX_CPU_C& cpu) {
 
 
 
-void Kernel32_QueryPerformanceCounter::ReadParameters (BX_CPU_C& cpu) {
+void Kernel32_QueryPerformanceCounter::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
 	mCounterVirtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
 }
 

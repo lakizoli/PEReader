@@ -32,6 +32,23 @@ extern int fetchDecode32 (const Bit8u *fetchPtr, Bit32u fetchModeMask, bx_bool h
 extern int fetchDecode64 (const Bit8u *fetchPtr, Bit32u fetchModeMask, bx_bool handle_lock_cr0, bxInstruction_c *i, unsigned remainingInPage);
 #endif
 
+void BX_CPU_C::cpu_inject_code (Bit64u address, const Bit8u* code, Bit32u size) {
+	Bit64u pageCount = size / 0x1000;
+	if (size % 0x1000 > 0) {
+		++pageCount;
+	}
+
+	for (Bit64u i = 0; i < pageCount; ++i) {
+		Bit64u pos = i * 0x1000;
+		Bit64u len = size - pos > 0x1000 ? 0x1000 : size - pos;
+
+		Bit8u* ptr = mem->get_vector (this, address + pos);
+		memcpy (ptr, &code[pos], len);
+
+		pos += len;
+	}
+}
+
 void BX_CPU_C::cpu_loop_direct () {
 	prev_rip = RIP; // commit new EIP
 	speculative_rsp = 0;
@@ -57,6 +74,10 @@ void BX_CPU_C::cpu_loop_direct () {
 		Bit8u* ptr = mem->get_vector (this, RIP);
 
 		if (RIP == 0x0000000000401257) {
+			RIP = RIP;
+		} else if (RIP == 0x0000000000300020) {
+			RIP = RIP;
+		} else if (RIP == 0x000000000030004f) {
 			RIP = RIP;
 		}
 

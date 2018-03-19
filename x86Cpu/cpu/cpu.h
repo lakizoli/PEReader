@@ -4451,6 +4451,7 @@ public: // for now...
 
   void SetImportHook (IImportHook* hook) { mHook.importHook = hook; }
 
+  void cpu_inject_code (Bit64u address, const Bit8u* code, Bit32u size);
   void cpu_loop_direct ();
   //END of ZCorp extensions
   ////////////////////////////////////////////////////////////////////////////////////////////////////

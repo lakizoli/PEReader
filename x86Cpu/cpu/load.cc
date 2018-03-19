@@ -55,16 +55,19 @@ BX_INSF_TYPE BX_CPP_AttrRegparmN(1) BX_CPU_C::LOAD_Eq(bxInstruction_c *i)
 
   //Execute call on the running system
   ICalledImport* openedImportCall = nullptr;
+  bool haveToCallRET = false;
   if (i->metaInfo.ia_opcode == BX_IA_CALL_Eq && mHook.ValidHooks () && mHook.importHook->IsImport (eaddr)) {
 	openedImportCall = mHook.importHook->CallImport (eaddr);
 	if (openedImportCall == nullptr) {
 		//TODO: ... throw error ...
 	}
+	haveToCallRET = true;
   } else if (i->metaInfo.ia_opcode == BX_IA_JMP_Eq && mHook.ValidHooks () && mHook.importHook->IsImport (eaddr)) {
 	openedImportCall = mHook.importHook->JumpImport (eaddr);
 	if (openedImportCall == nullptr) {
 		//TODO: ... throw error ...
 	}
+	haveToCallRET = false;
   }
 
   //Execute call on processor (or a fake call, when an import is executed)
@@ -77,7 +80,9 @@ BX_INSF_TYPE BX_CPP_AttrRegparmN(1) BX_CPU_C::LOAD_Eq(bxInstruction_c *i)
 	}
 
 	//Execute return on processor
-	RETnear64 (nullptr);
+	if (haveToCallRET) {
+		RETnear64 (nullptr);
+	}
   }
 }
 #endif

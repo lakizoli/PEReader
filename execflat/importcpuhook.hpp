@@ -14,13 +14,14 @@ class ImportCpuHook : public BX_CPU_C::IImportHook {
 
 	BX_CPU_C& mCpu;
 	uint64_t mLoadBase;
+	uint64_t mInjectBase;
 	std::shared_ptr<FlatBinary> mBinary;
 
 	std::string FindImport (uint64_t virtualAddress) const;
 	BX_CPU_C::ICalledImport* RunImport (bool isCall, Bit64u address) const;
 
 public:
-	ImportCpuHook (BX_CPU_C& cpu, uint64_t loadBase, std::shared_ptr<FlatBinary> binary);
+	ImportCpuHook (BX_CPU_C& cpu, uint64_t loadBase, uint64_t injectBase, std::shared_ptr<FlatBinary> binary);
 
 	virtual bool IsImport (Bit64u address) const override;
 
