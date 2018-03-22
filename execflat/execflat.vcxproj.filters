@@ -20,6 +20,12 @@
     <ClInclude Include="apicrtimports.hpp">
       <Filter>importhandlers</Filter>
     </ClInclude>
+    <ClInclude Include="importstate.hpp">
+      <Filter>importstates</Filter>
+    </ClInclude>
+    <ClInclude Include="apicrtstate.hpp">
+      <Filter>importstates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -42,6 +48,12 @@
     <ClCompile Include="apicrtimports.cpp">
       <Filter>importhandlers</Filter>
     </ClCompile>
+    <ClCompile Include="importstate.cpp">
+      <Filter>importstates</Filter>
+    </ClCompile>
+    <ClCompile Include="apicrtstate.cpp">
+      <Filter>importstates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="flat">
@@ -52,6 +64,9 @@
     </Filter>
     <Filter Include="executor">
       <UniqueIdentifier>{8c1ae931-c848-4e3b-b5c3-bfb6b110f4cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="importstates">
+      <UniqueIdentifier>{0a73bf62-ac37-4121-917f-e293c997bc98}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -75,10 +75,6 @@ void BX_CPU_C::cpu_loop_direct () {
 
 		if (RIP == 0x0000000000401257) {
 			RIP = RIP;
-		} else if (RIP == 0x0000000000300020) {
-			RIP = RIP;
-		} else if (RIP == 0x000000000030004f) {
-			RIP = RIP;
 		}
 
 		//Decode instruction

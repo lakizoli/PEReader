@@ -1,15 +1,17 @@
 #pragma once
 
-#define DECLARE_IMPORT_HANDLER(cls)									\
-	static std::shared_ptr<ImportHandler> __creator () {			\
-		return std::shared_ptr<ImportHandler> (new cls ());			\
-	}																\
+#include <x86cpu.h>
+
+#define DECLARE_IMPORT_HANDLER(cls)								\
+	static std::shared_ptr<ImportHandler> __creator () {		\
+		return std::shared_ptr<ImportHandler> (new cls ());		\
+	}															\
 	static uint32_t __register_creator_result;
 
 #define IMPLEMENT_IMPORT_HANDLER(cls, importDeclaration)							\
 	uint32_t cls::__register_creator_result = ImportHandler::RegisterCreator (importDeclaration, cls::__creator);
 
-#include <x86cpu.h>
+class ImportState;
 
 class ImportHandler {
 //Construction
@@ -51,9 +53,23 @@ protected:
 	static uint8_t* GetAddressOfVirtualAddress (BX_CPU_C& cpu, uint64_t virtualAddress);
 
 public:
-	virtual void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) = 0;
+	virtual void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) = 0;
 	virtual void Call () = 0;
-	virtual bool WriteResults (BX_CPU_C& cpu) = 0;
+	virtual bool WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) = 0;
+};
+
+template<class T>
+class ImportHandlerWithState : public ImportHandler {
+protected:
+	std::string mStateID;
+	std::shared_ptr<T> mState;
+
+	ImportHandlerWithState (const std::string& stateID) : mStateID (stateID) {}
+
+	void ReadState (std::shared_ptr<ImportState> state);
+	bool WriteState (std::shared_ptr<ImportState> state);
+
+	uint64_t GetVirtualAddressOfStateItem (uint64_t itemOffset);
 };
 
 template<typename T>
@@ -235,4 +251,38 @@ bool ImportHandler::WriteValueToGPRegister (BX_CPU_C& cpu, T val, uint32_t reg) 
 	}
 
 	return false;
+}
+
+template <class T>
+void ImportHandlerWithState<T>::ReadState (std::shared_ptr<ImportState> state) {
+	mState = std::static_pointer_cast<T>(state->Read(mStateID));
+}
+
+template <class T>
+bool ImportHandlerWithState<T>::WriteState (std::shared_ptr<ImportState> state) {
+	if (mState == nullptr) {
+		return false;
+	}
+
+	if (!state->Write (mStateID, mState)) {
+		return false;
+	}
+
+	return true;
+}
+
+template <class T>
+uint64_t ImportHandlerWithState<T>::GetVirtualAddressOfStateItem (uint64_t itemOffset) {
+	if (mState == nullptr) {
+		return 0;
+	}
+
+	std::tuple<uint64_t, uint32_t> extents = mState->GetExtents(mStateID);
+	uint64_t virtualAddress = std::get<0>(extents);
+	uint32_t size = std::get<1>(extents);
+	if (virtualAddress == 0 || size == 0) {
+		return 0;
+	}
+
+	return virtualAddress + itemOffset;
 }

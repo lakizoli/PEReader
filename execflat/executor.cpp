@@ -120,7 +120,7 @@ bool Executor::RunBinary (std::shared_ptr<FlatBinary> binary) {
 
 	////////////////////////////////////////////////////////////
 	//Init cpu hooks
-	ImportCpuHook importHook (*cpu, loadBase, loadBase - 0x100000, binary);
+	ImportCpuHook importHook (*cpu, loadBase, loadBase - 0x100000, loadBase - 0x200000, binary);
 	cpu->SetImportHook (&importHook);
 
 	////////////////////////////////////////////////////////////

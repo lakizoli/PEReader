@@ -158,18 +158,22 @@
   <ItemGroup>
     <ClInclude Include="..\pereader\flatbinary.hpp" />
     <ClInclude Include="apicrtimports.hpp" />
+    <ClInclude Include="apicrtstate.hpp" />
     <ClInclude Include="executor.hpp" />
     <ClInclude Include="importcpuhook.hpp" />
     <ClInclude Include="importhandler.hpp" />
+    <ClInclude Include="importstate.hpp" />
     <ClInclude Include="kernel32imports.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\pereader\flatbinary.cpp" />
     <ClCompile Include="apicrtimports.cpp" />
+    <ClCompile Include="apicrtstate.cpp" />
     <ClCompile Include="executor.cpp" />
     <ClCompile Include="importcpuhook.cpp" />
     <ClCompile Include="importhandler.cpp" />
+    <ClCompile Include="importstate.cpp" />
     <ClCompile Include="kernel32imports.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">

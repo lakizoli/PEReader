@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "importcpuhook.hpp"
 #include "importhandler.hpp"
+#include "importstate.hpp"
 #include <flatbinary.hpp>
 
 std::string ImportCpuHook::FindImport (uint64_t virtualAddress) const {
@@ -23,17 +24,20 @@ BX_CPU_C::ICalledImport* ImportCpuHook::RunImport (bool isCall, Bit64u address) 
 		return nullptr;
 	}
 
-	importHandler->ReadParameters (mCpu, mInjectBase);
+	importHandler->ReadParameters (mCpu, mInjectBase, mState);
 	importHandler->Call ();
 
 	return new CalledImport (importHandler);
 }
 
-ImportCpuHook::ImportCpuHook (BX_CPU_C& cpu, uint64_t loadBase, uint64_t injectBase, std::shared_ptr<FlatBinary> binary) :
+ImportCpuHook::ImportCpuHook (BX_CPU_C& cpu, uint64_t loadBase, uint64_t injectBase, uint64_t stateBase, std::shared_ptr<FlatBinary> binary) :
 	mCpu (cpu),
 	mLoadBase (loadBase),
 	mInjectBase (injectBase),
-	mBinary (binary) {
+	mStateBase (stateBase),
+	mBinary (binary)
+{
+	mState = std::make_shared<ImportState> (mCpu, stateBase);
 }
 
 bool ImportCpuHook::IsImport (Bit64u address) const {
@@ -51,5 +55,5 @@ bool ImportCpuHook::CloseImportCall (BX_CPU_C::ICalledImport* calledImport) {
 	std::shared_ptr<ImportHandler> importHandler = calledImportInst->importHandler;
 	delete calledImportInst;
 
-	return importHandler->WriteResults (mCpu);
+	return importHandler->WriteResults (mCpu, mState);
 }

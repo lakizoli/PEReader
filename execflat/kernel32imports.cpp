@@ -8,7 +8,7 @@ IMPLEMENT_IMPORT_HANDLER (Kernel32_QueryPerformanceCounter, "[KERNEL32.dll]Query
 
 
 
-void Kernel32_GetSystemTimeAsFileTime::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
+void Kernel32_GetSystemTimeAsFileTime::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
 	mResultVirtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
 }
 
@@ -16,13 +16,13 @@ void Kernel32_GetSystemTimeAsFileTime::Call () {
 	GetSystemTimeAsFileTime (&mCallResult);
 }
 
-bool Kernel32_GetSystemTimeAsFileTime::WriteResults (BX_CPU_C& cpu) {
+bool Kernel32_GetSystemTimeAsFileTime::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
 	return CopyToVirtualMemory (cpu, mCallResult, mResultVirtualAddress, sizeof (FILETIME));
 }
 
 
 
-void Kernel32_GetCurrentThreadId::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
+void Kernel32_GetCurrentThreadId::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
 	//No parameters needed
 }
 
@@ -30,13 +30,13 @@ void Kernel32_GetCurrentThreadId::Call () {
 	mThreadId = GetCurrentThreadId ();
 }
 
-bool Kernel32_GetCurrentThreadId::WriteResults (BX_CPU_C& cpu) {
+bool Kernel32_GetCurrentThreadId::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
 	return WriteValueToGPRegister (cpu, (uint32_t) mThreadId, BX_64BIT_REG_RAX);
 }
 
 
 
-void Kernel32_GetCurrentProcessId::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
+void Kernel32_GetCurrentProcessId::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
 	//No parameters needed
 }
 
@@ -44,13 +44,13 @@ void Kernel32_GetCurrentProcessId::Call () {
 	mProcessId = GetCurrentProcessId ();
 }
 
-bool Kernel32_GetCurrentProcessId::WriteResults (BX_CPU_C& cpu) {
+bool Kernel32_GetCurrentProcessId::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
 	return WriteValueToGPRegister (cpu, (uint32_t) mProcessId, BX_64BIT_REG_RAX);
 }
 
 
 
-void Kernel32_QueryPerformanceCounter::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
+void Kernel32_QueryPerformanceCounter::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
 	mCounterVirtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
 }
 
@@ -58,7 +58,7 @@ void Kernel32_QueryPerformanceCounter::Call () {
 	mReturnValue = QueryPerformanceCounter (&mCounter);
 }
 
-bool Kernel32_QueryPerformanceCounter::WriteResults (BX_CPU_C& cpu) {
+bool Kernel32_QueryPerformanceCounter::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
 	if (!CopyToVirtualMemory (cpu, mCounter, mCounterVirtualAddress, sizeof (LARGE_INTEGER))) {
 		return false;
 	}

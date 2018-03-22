@@ -3,12 +3,14 @@
 
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_InitTerm, "[api-ms-win-crt-runtime-l1-1-0.dll]_initterm");
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_InitTermE, "[api-ms-win-crt-runtime-l1-1-0.dll]_initterm_e");
+IMPLEMENT_IMPORT_HANDLER (ApiCrt_SetAppType, "[api-ms-win-crt-runtime-l1-1-0.dll]_set_app_type");
+IMPLEMENT_IMPORT_HANDLER (ApiCrt_SetFMode, "[api-ms-win-crt-stdio-l1-1-0.dll]_set_fmode");
+IMPLEMENT_IMPORT_HANDLER (ApiCrt_GetComMode, "[api-ms-win-crt-stdio-l1-1-0.dll]__p__commode");
 
 
 
-extern "C" void _initterm (void*, void*);
-
-void ApiCrt_InitTerm::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
+//TODO: implement like InitTermE () when needed...
+void ApiCrt_InitTerm::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
 	uint64_t virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
 	mFirstParam = GetAddressOfVirtualAddress (cpu, virtualAddress);
 
@@ -17,17 +19,16 @@ void ApiCrt_InitTerm::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
 }
 
 void ApiCrt_InitTerm::Call () {
-	_initterm (mFirstParam, mSecondParam);
+	//_initterm (mFirstParam, mSecondParam);
 }
 
-bool ApiCrt_InitTerm::WriteResults (BX_CPU_C& cpu) {
+bool ApiCrt_InitTerm::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
 	//... Nothing to do ...
 	return true;
 }
 
 
-
-void ApiCrt_InitTermE::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase) {
+void ApiCrt_InitTermE::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
 	std::vector<uint8_t> InitTerm64Bit {
 		0x48, 0x89, 0x5c, 0x24, 0x08,				//mov qword ptr ss : [rsp + 8], rbx
 		0x48, 0x89, 0x74, 0x24, 0x10,				//mov qword ptr ss : [rsp + 16], rsi
@@ -84,6 +85,75 @@ void ApiCrt_InitTermE::Call () {
 	//... Nothing to do ...
 }
 
-bool ApiCrt_InitTermE::WriteResults (BX_CPU_C& cpu) {
+bool ApiCrt_InitTermE::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
 	return WriteValueToGPRegister (cpu, mImportFunctionAddress, BX_64BIT_REG_RIP);
+}
+
+
+
+void ApiCrt_SetAppType::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	mAppType = ReadSimpleParameter_64BitCallingCV<uint32_t> (cpu, 0);
+	ReadState (state);
+}
+
+void ApiCrt_SetAppType::Call () {
+	if (mState) {
+		mState->CRT_app_type = mAppType;
+	}
+}
+
+bool ApiCrt_SetAppType::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	if (!WriteState (state)) {
+		return false;
+	}
+
+	//We have to call RET here to return to the caller after the jump call, because we ignored the call of the real function...
+	cpu.RETnear64 (nullptr);
+
+	return true;
+}
+
+
+
+void ApiCrt_SetFMode::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	mFileMode = ReadSimpleParameter_64BitCallingCV<uint32_t> (cpu, 0);
+	ReadState (state);
+}
+
+void ApiCrt_SetFMode::Call () {
+	if (mState) {
+		mState->CRT__fmode = mFileMode;
+	}
+}
+
+bool ApiCrt_SetFMode::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	if (!WriteState (state)) {
+		return false;
+	}
+
+	//We have to call RET here to return to the caller after the jump call, because we ignored the call of the real function...
+	cpu.RETnear64 (nullptr);
+
+	return true;
+}
+
+
+
+void ApiCrt_GetComMode::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	ReadState (state);
+}
+
+void ApiCrt_GetComMode::Call () {
+	if (mState) {
+		mComModeRes = GetVirtualAddressOfStateItem (offsetof (ApiCrtState, CRT__commode));
+	}
+}
+
+bool ApiCrt_GetComMode::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	//No writeback of state needed, because we read it only...
+
+	//We have to call RET here to return to the caller after the jump call, because we ignored the call of the real function...
+	cpu.RETnear64 (nullptr);
+
+	return true;
 }
