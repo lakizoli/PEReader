@@ -21,6 +21,10 @@ std::shared_ptr<ImportHandler> ImportHandler::Create (const std::string& importD
 }
 
 uint8_t* ImportHandler::GetAddressOfVirtualAddress (BX_CPU_C& cpu, uint64_t virtualAddress) {
+	if (virtualAddress == 0) {
+		return nullptr;
+	}
+
 	//TODO: Have to handle multiple memory pages!
 	return cpu.mem->get_vector (&cpu, virtualAddress);
 }

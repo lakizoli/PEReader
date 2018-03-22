@@ -5,6 +5,8 @@ IMPLEMENT_IMPORT_HANDLER (Kernel32_GetSystemTimeAsFileTime, "[KERNEL32.dll]GetSy
 IMPLEMENT_IMPORT_HANDLER (Kernel32_GetCurrentThreadId, "[KERNEL32.dll]GetCurrentThreadId");
 IMPLEMENT_IMPORT_HANDLER (Kernel32_GetCurrentProcessId, "[KERNEL32.dll]GetCurrentProcessId");
 IMPLEMENT_IMPORT_HANDLER (Kernel32_QueryPerformanceCounter, "[KERNEL32.dll]QueryPerformanceCounter");
+IMPLEMENT_IMPORT_HANDLER (Kernel32_InitializeSListHead, "[KERNEL32.dll]InitializeSListHead");
+IMPLEMENT_IMPORT_HANDLER (Kernel32_SetUnhandledExceptionFilter, "[KERNEL32.dll]SetUnhandledExceptionFilter");
 
 
 
@@ -66,3 +68,40 @@ bool Kernel32_QueryPerformanceCounter::WriteResults (BX_CPU_C& cpu, std::shared_
 	return WriteValueToGPRegister (cpu, (uint32_t) mReturnValue, BX_64BIT_REG_RAX);
 }
 
+
+
+void Kernel32_InitializeSListHead::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	uint64_t virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
+	mHead = GetAddressOfVirtualAddress (cpu, virtualAddress);
+}
+
+void Kernel32_InitializeSListHead::Call () {
+	InitializeSListHead ((PSLIST_HEADER) mHead);
+}
+
+bool Kernel32_InitializeSListHead::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	//We have to call RET here to return to the caller after the jump call, because we ignored the call of the real function...
+	cpu.RETnear64 (nullptr);
+
+	return true;
+}
+
+
+
+void Kernel32_SetUnhandledExceptionFilter::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	//We don't need this...
+	//uint64_t virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
+	//mTopLevelExceptionFilter = GetAddressOfVirtualAddress (cpu, virtualAddress);
+}
+
+void Kernel32_SetUnhandledExceptionFilter::Call () {
+	//We don't need this...
+	//mLastTopLevelExceptionFilter = (uint64_t) SetUnhandledExceptionFilter ((LPTOP_LEVEL_EXCEPTION_FILTER) mTopLevelExceptionFilter);
+}
+
+bool Kernel32_SetUnhandledExceptionFilter::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	//We have to call RET here to return to the caller after the jump call, because we ignored the call of the real function...
+	cpu.RETnear64 (nullptr);
+
+	return WriteValueToGPRegister (cpu, mLastTopLevelExceptionFilter, BX_64BIT_REG_RAX);
+}

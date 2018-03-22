@@ -73,7 +73,7 @@ void BX_CPU_C::cpu_loop_direct () {
 		//Get next instruction
 		Bit8u* ptr = mem->get_vector (this, RIP);
 
-		if (RIP == 0x0000000000401257) {
+		if (RIP == 0x0000000000401070) { //Main
 			RIP = RIP;
 		}
 

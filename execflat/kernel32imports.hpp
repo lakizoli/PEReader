@@ -9,7 +9,7 @@ class Kernel32_GetSystemTimeAsFileTime : public ImportHandler {
 	uint64_t mResultVirtualAddress;
 	FILETIME mCallResult;
 
-	Kernel32_GetSystemTimeAsFileTime () : mResultVirtualAddress (0), mCallResult { 0,0 } {}
+	Kernel32_GetSystemTimeAsFileTime () : mResultVirtualAddress (0), mCallResult{ 0,0 } {}
 
 public:
 	void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
@@ -56,4 +56,31 @@ public:
 	void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
 	void Call () override;
 	bool WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
+};
+
+class Kernel32_InitializeSListHead : public ImportHandler {
+	DECLARE_IMPORT_HANDLER (Kernel32_InitializeSListHead);
+
+	uint8_t* mHead;
+
+	Kernel32_InitializeSListHead () : mHead (nullptr) {}
+
+public:
+	void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
+	void Call () override;
+	bool WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
+};
+
+class Kernel32_SetUnhandledExceptionFilter : public ImportHandler {
+	DECLARE_IMPORT_HANDLER (Kernel32_SetUnhandledExceptionFilter);
+
+	uint8_t* mTopLevelExceptionFilter;
+	uint64_t mLastTopLevelExceptionFilter;
+
+	Kernel32_SetUnhandledExceptionFilter () : mTopLevelExceptionFilter (nullptr), mLastTopLevelExceptionFilter (0) {}
+
+public:
+	void ReadParameters(BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
+	void Call() override;
+	bool WriteResults(BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
 };
