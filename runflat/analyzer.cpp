@@ -292,7 +292,7 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 	//Store actual binary
 	mBinary = binary;
 
-	//TODO: walk, and alter all relocation originated to the entry point of the binary...
+	//TODO: walk, and alter all relocation originated to the entry point of the binary (only addresses point to the .text segment have to analyze!)...
 
 	//Walk functions on all code path
 	std::set<uint64_t> functionAddresses;
@@ -382,8 +382,6 @@ void Analyzer::Execute (std::shared_ptr<FlatBinary> binary) {
 }
 
 void Analyzer::SaveAssemblyFiles () const {
-	//TODO: handle byte dumps also in to the files...
-
 	for (const auto itFunc : mFunctions) {
 		std::shared_ptr<ASMFunction> func = itFunc.second;
 		if (func) {

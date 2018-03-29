@@ -126,7 +126,26 @@ inline T ImportHandler::ReadStackParameter_64BitCallingCV (BX_CPU_C& cpu, uint32
 
 	paramIndex -= 4;
 
-	//TODO: read stack ...
+	uint64_t virtualStackAddress = cpu.gen_reg[BX_64BIT_REG_RSP].rrx;
+	uint64_t virtualParamAddress = virtualStackAddress + 0x08 + 0x20 + (paramIndex * 0x08);
+
+	uint64_t stackValue = 0;
+	if (!CopyFromVirtualMemory (cpu, virtualParamAddress, sizeof (uint64_t), stackValue)) {
+		return T ();
+	}
+
+	switch (sizeof (T)) {
+	case 1: //byte
+		return T (stackValue & 0xff);
+	case 2: //word
+		return T (stackValue & 0xffff);
+	case 4: //dword
+		return T (stackValue & 0xffffffff);
+	case 8: //qword
+		return T (stackValue);
+	default:
+		break;
+	}
 
 	return T ();
 }

@@ -401,7 +401,7 @@ void ApiCrt_CommonVFPrintf::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, 
 	virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 3);
 	mLocale = GetAddressOfVirtualAddress (cpu, virtualAddress);
 
-	virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 4); //TODO: read stack...
+	virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 4);
 	mFormatParamList = (va_list) GetAddressOfVirtualAddress (cpu, virtualAddress);
 }
 

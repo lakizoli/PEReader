@@ -59,7 +59,7 @@ ImportState::ImportState (BX_CPU_C& cpu, uint64_t stateBase) :
 
 		std::shared_ptr<ImportStateItem> item = creatorItem.creator ();
 		if (!CopyToVirtualMemory (mCpu, item, creatorItem.virtualAddress, creatorItem.size)) {
-			//TODO: log error...
+			//TODO: ... throw error...
 		}
 
 		offset += creatorItem.size;

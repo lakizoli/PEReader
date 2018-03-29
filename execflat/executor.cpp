@@ -131,6 +131,8 @@ bool Executor::RunBinary (std::shared_ptr<FlatBinary> binary) {
 	//cpu->cpu_loop ();
 	cpu->cpu_loop_direct ();
 
+	//TODO: call exported function given in parameter to establish dll functionality...
+
 	////////////////////////////////////////////////////////////
 	//Release resources
 	//...
