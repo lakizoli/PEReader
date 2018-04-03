@@ -1,6 +1,7 @@
 #pragma once
 
 #include "importhandler.hpp"
+#include "kernel32state.hpp"
 #include <Windows.h>
 
 class Kernel32_GetSystemTimeAsFileTime : public ImportHandler {
@@ -83,4 +84,19 @@ public:
 	void ReadParameters(BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
 	void Call() override;
 	bool WriteResults(BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
+};
+
+class Kernel32_GetModuleHandleW : public ImportHandlerWithState<Kernel32State> {
+	DECLARE_IMPORT_HANDLER (Kernel32_GetModuleHandleW);
+
+	uint8_t* mModuleName;
+	HMODULE mHandle;
+	uint64_t mVirtualHandle;
+
+	Kernel32_GetModuleHandleW () : ImportHandlerWithState ("Kernel32"), mModuleName (nullptr), mHandle (0), mVirtualHandle (0) {}
+
+public:
+	void ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
+	void Call () override;
+	bool WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
 };

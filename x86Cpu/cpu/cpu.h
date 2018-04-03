@@ -4449,10 +4449,18 @@ public: // for now...
 	  bool ValidHooks () const { return importHook != nullptr; }
   } mHook;
 
+  struct ExitState {
+	  bool isExited;
+	  Bit32s exitCode;
+
+	  ExitState () : isExited (false), exitCode (0) {}
+  } mExitState;
+
   void SetImportHook (IImportHook* hook) { mHook.importHook = hook; }
 
   void cpu_inject_code (Bit64u address, const Bit8u* code, Bit32u size);
-  void cpu_loop_direct ();
+  Bit32s cpu_loop_direct ();
+  void cpu_exit (Bit32s exitCode);
   //END of ZCorp extensions
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 

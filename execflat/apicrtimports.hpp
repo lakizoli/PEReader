@@ -121,6 +121,19 @@ public:
 	bool WriteResults(BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
 };
 
+class ApiCrt_Exit : public ImportHandler {
+	DECLARE_IMPORT_HANDLER (ApiCrt_Exit);
+
+	int32_t mExitCode;
+
+	ApiCrt_Exit () : mExitCode (0) {}
+
+public:
+	void ReadParameters(BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) override;
+	void Call() override;
+	bool WriteResults(BX_CPU_C& cpu, std::shared_ptr<ImportState> state) override;
+};
+
 //[api-ms-win-crt-stdio-l1-1-0.dll]
 
 class ApiCrt_SetFMode : public ImportHandlerWithState<ApiCrtState> {

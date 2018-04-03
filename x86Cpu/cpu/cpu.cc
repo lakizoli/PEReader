@@ -49,7 +49,7 @@ void BX_CPU_C::cpu_inject_code (Bit64u address, const Bit8u* code, Bit32u size) 
 	}
 }
 
-void BX_CPU_C::cpu_loop_direct () {
+Bit32s BX_CPU_C::cpu_loop_direct () {
 	prev_rip = RIP; // commit new EIP
 	speculative_rsp = 0;
 
@@ -69,13 +69,13 @@ void BX_CPU_C::cpu_loop_direct () {
 	}
 
 	//Execute instructions
-	while (true) {
+	while (!mExitState.isExited) {
 		//Get next instruction
 		Bit8u* ptr = mem->get_vector (this, RIP);
 
-		if (RIP == 0x000000000040130c) {
-			RIP = RIP;
-		}
+		//if (RIP == 0x0000000000401a51) {
+		//	RIP = RIP;
+		//}
 
 		//Decode instruction
 		bxInstruction_c instruction;
@@ -97,6 +97,13 @@ void BX_CPU_C::cpu_loop_direct () {
 		// when handlers chaining is enabled this single call will execute entire trace
 		BX_CPU_CALL_METHOD (instruction.execute1, (&instruction)); // might iterate repeat instruction
 	}
+
+	return mExitState.exitCode;
+}
+
+void BX_CPU_C::cpu_exit (Bit32s exitCode) {
+	mExitState.isExited = true;
+	mExitState.exitCode = exitCode;
 }
 
 void BX_CPU_C::cpu_loop(void)

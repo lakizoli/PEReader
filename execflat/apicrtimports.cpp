@@ -10,6 +10,7 @@ IMPLEMENT_IMPORT_HANDLER (ApiCrt_InitializeNarrowEnvironment, "[api-ms-win-crt-r
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_GetArgv, "[api-ms-win-crt-runtime-l1-1-0.dll]__p___argv");
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_GetArgc, "[api-ms-win-crt-runtime-l1-1-0.dll]__p___argc");
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_GetInitialNarrowEnvironment, "[api-ms-win-crt-runtime-l1-1-0.dll]_get_initial_narrow_environment");
+IMPLEMENT_IMPORT_HANDLER (ApiCrt_Exit, "[api-ms-win-crt-runtime-l1-1-0.dll]exit");
 
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_SetFMode, "[api-ms-win-crt-stdio-l1-1-0.dll]_set_fmode");
 IMPLEMENT_IMPORT_HANDLER (ApiCrt_GetComMode, "[api-ms-win-crt-stdio-l1-1-0.dll]__p__commode");
@@ -329,6 +330,26 @@ bool ApiCrt_GetInitialNarrowEnvironment::WriteResults (BX_CPU_C& cpu, std::share
 
 	return WriteValueToGPRegister (cpu, mInitEnv, BX_64BIT_REG_RAX);
 }
+
+
+
+void ApiCrt_Exit::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	mExitCode = ReadSimpleParameter_64BitCallingCV<int32_t> (cpu, 0);
+}
+
+void ApiCrt_Exit::Call () {
+	//Nothing to do...
+}
+
+bool ApiCrt_Exit::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	cpu.cpu_exit (mExitCode);
+
+	//We have to call RET here to return to the caller after the jump call, because we ignored the call of the real function...
+	cpu.RETnear64 (nullptr);
+
+	return true;
+}
+
 
 
 

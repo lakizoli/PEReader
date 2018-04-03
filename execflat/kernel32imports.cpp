@@ -7,6 +7,7 @@ IMPLEMENT_IMPORT_HANDLER (Kernel32_GetCurrentProcessId, "[KERNEL32.dll]GetCurren
 IMPLEMENT_IMPORT_HANDLER (Kernel32_QueryPerformanceCounter, "[KERNEL32.dll]QueryPerformanceCounter");
 IMPLEMENT_IMPORT_HANDLER (Kernel32_InitializeSListHead, "[KERNEL32.dll]InitializeSListHead");
 IMPLEMENT_IMPORT_HANDLER (Kernel32_SetUnhandledExceptionFilter, "[KERNEL32.dll]SetUnhandledExceptionFilter");
+IMPLEMENT_IMPORT_HANDLER (Kernel32_GetModuleHandleW, "[KERNEL32.dll]GetModuleHandleW");
 
 
 
@@ -104,4 +105,31 @@ bool Kernel32_SetUnhandledExceptionFilter::WriteResults (BX_CPU_C& cpu, std::sha
 	cpu.RETnear64 (nullptr);
 
 	return WriteValueToGPRegister (cpu, mLastTopLevelExceptionFilter, BX_64BIT_REG_RAX);
+}
+
+
+
+
+void Kernel32_GetModuleHandleW::ReadParameters (BX_CPU_C& cpu, uint64_t injectBase, std::shared_ptr<ImportState> state) {
+	uint64_t virtualAddress = ReadSimpleParameter_64BitCallingCV<uint64_t> (cpu, 0);
+	mModuleName = GetAddressOfVirtualAddress (cpu, virtualAddress);
+	ReadState (state);
+}
+
+void Kernel32_GetModuleHandleW::Call () {
+	//TODO: copy PE header bytes (first 0x1000 bytes) the handle points to into virtual address space to ensure guard checks to run properly...
+	mHandle = GetModuleHandleW ((LPCWSTR) mModuleName);
+
+	if (mHandle && mState) {
+		memcpy (mState->moduleHeader, (const void*) mHandle, 0x1000);
+		mVirtualHandle = GetVirtualAddressOfStateItem (offsetof (Kernel32State, moduleHeader));
+	}
+}
+
+bool Kernel32_GetModuleHandleW::WriteResults (BX_CPU_C& cpu, std::shared_ptr<ImportState> state) {
+	if (!WriteState (state)) {
+		return false;
+	}
+
+	return WriteValueToGPRegister (cpu, mVirtualHandle, BX_64BIT_REG_RAX);
 }

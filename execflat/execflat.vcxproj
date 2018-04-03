@@ -164,6 +164,7 @@
     <ClInclude Include="importhandler.hpp" />
     <ClInclude Include="importstate.hpp" />
     <ClInclude Include="kernel32imports.hpp" />
+    <ClInclude Include="kernel32state.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +176,7 @@
     <ClCompile Include="importhandler.cpp" />
     <ClCompile Include="importstate.cpp" />
     <ClCompile Include="kernel32imports.cpp" />
+    <ClCompile Include="kernel32state.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
